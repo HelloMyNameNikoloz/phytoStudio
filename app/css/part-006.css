@@ -1,0 +1,180 @@
+  gap: 12px;
+}
+
+.file-empty {
+  padding: 8px 4px;
+  color: var(--subtle);
+  font-size: 11px;
+}
+
+.file-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 9px 10px;
+  width: 100%;
+  min-height: 158px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.025)),
+    rgba(255, 255, 255, 0.025);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.file-meta {
+  grid-column: 1;
+  min-width: 0;
+}
+
+.file-dirty {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--neon-pink);
+}
+
+.file-item:hover,
+.file-item.active {
+  border-color: rgba(76, 201, 240, 0.34);
+  background:
+    linear-gradient(145deg, rgba(76, 201, 240, 0.12), rgba(247, 37, 133, 0.06)),
+    var(--surface-soft);
+}
+
+.file-dot {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 8px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--sky-aqua);
+  box-shadow: 0 0 16px rgba(76, 201, 240, 0.18);
+}
+
+.file-dot.plantuml {
+  background: var(--neon-pink);
+}
+
+.file-name {
+  display: block;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-kind {
+  display: block;
+  margin-top: 3px;
+  color: var(--subtle);
+  font-size: 10px;
+}
+
+.file-thumb {
+  grid-column: 1 / -1;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  background-color: rgba(5, 6, 12, 0.72);
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.035) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.035) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.035) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.035) 75%);
+  background-position: 0 0, 0 9px, 9px -9px, -9px 0;
+  background-size: 18px 18px;
+  overflow: hidden;
+}
+
+.file-thumb svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.file-thumb-empty {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 32px;
+  border: 1px solid rgba(76, 201, 240, 0.28);
+  border-radius: 8px;
+  background: rgba(76, 201, 240, 0.09);
+  color: var(--sky-aqua);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+}
+
+.stage {
+  grid-column: 3;
+  grid-row: 1;
+  display: grid;
+  grid-template-rows: 52px minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 14px;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.stage.hidden {
+  display: none;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.segmented {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.segmented button {
+  min-width: 88px;
+  min-height: 27px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.segmented button.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text);
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: minmax(360px, 80fr) 8px minmax(260px, 20fr);
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+

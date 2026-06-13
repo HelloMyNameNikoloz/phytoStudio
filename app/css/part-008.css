@@ -1,0 +1,180 @@
+
+.organize-card strong {
+  font-size: 13px;
+}
+
+.organize-card span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.organize-spinner {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border: 2px solid rgba(76, 201, 240, 0.2);
+  border-top-color: var(--sky-aqua);
+  border-radius: 999px;
+  animation: organize-spin 0.8s linear infinite;
+}
+
+@keyframes organize-sheen {
+  from {
+    background-position: -420px 0, 0 0;
+  }
+  to {
+    background-position: 420px 0, 0 0;
+  }
+}
+
+@keyframes organize-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.edge-hit {
+  cursor: pointer;
+  pointer-events: stroke;
+}
+
+.edge-line {
+  pointer-events: none;
+  stroke: var(--edge-color);
+  stroke-width: 2;
+  stroke-opacity: 0.86;
+}
+
+.edge-label {
+  pointer-events: none;
+}
+
+.edge-line.selected {
+  stroke: var(--edge-selected-color);
+  stroke-width: 3;
+}
+
+.edge-label {
+  fill: var(--edge-label-color);
+  font-size: 11px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: var(--edge-label-stroke);
+  stroke-width: 4px;
+}
+
+.edge-label-bg {
+  fill: var(--edge-label-bg);
+  stroke: var(--node-border);
+  stroke-width: 1px;
+}
+
+.diagram-node {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  min-width: 126px;
+  max-width: 220px;
+  min-height: 50px;
+  padding: 10px 14px;
+  border: 1px solid var(--node-border);
+  border-radius: 8px;
+  background: var(--node-bg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.36);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+  text-align: center;
+  cursor: grab;
+  user-select: none;
+  pointer-events: auto;
+}
+
+.diagram-node:hover {
+  border-color: var(--node-border-hover);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--node-border-hover) 45%, transparent), 0 18px 38px rgba(0, 0, 0, 0.32);
+}
+
+.diagram-node.selected {
+  border-color: var(--node-border-selected);
+  background: var(--node-bg-selected);
+  box-shadow: 0 0 0 2px var(--node-border-selected), 0 0 18px color-mix(in srgb, var(--node-border-selected) 44%, transparent), 0 18px 38px rgba(0, 0, 0, 0.32);
+}
+
+.diagram-node.pending {
+  border-color: var(--neon-pink);
+}
+
+.diagram-node.editing {
+  cursor: default;
+}
+
+.inline-edit {
+  cursor: text;
+  user-select: text;
+  outline: none;
+  caret-color: var(--sky-aqua);
+}
+
+.inline-edit:focus {
+  background: rgba(76, 201, 240, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(76, 201, 240, 0.34);
+}
+
+.node-label.inline-edit {
+  display: block;
+  min-width: 92px;
+  min-height: 18px;
+  border-radius: 5px;
+}
+
+.diagram-node.class-node {
+  display: block;
+  min-width: 180px;
+  max-width: 260px;
+  padding: 0;
+  overflow: hidden;
+  text-align: left;
+}
+
+.class-node-title {
+  display: block;
+  min-height: 36px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--node-title-bg);
+  color: var(--text);
+  font-weight: 750;
+  text-align: center;
+}
+
+.class-node-section {
+  display: block;
+  min-height: 28px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--node-section-line);
+  color: var(--node-section-text);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.35;
+  white-space: pre-wrap;
+}
+
+.class-node-section:last-child {
+  border-bottom: 0;
+}
+
+.empty-builder {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  background: rgba(7, 8, 14, 0.58);

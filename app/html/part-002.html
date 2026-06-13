@@ -1,0 +1,180 @@
+          <section class="side-section collapsed" id="section-preview" data-section="preview">
+            <div class="side-section-header">
+              <button class="side-section-toggle" type="button" data-toggle="preview" aria-expanded="false">
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="side-section-title">Live Preview</span>
+              </button>
+              <div class="side-section-actions">
+                <button class="ghost-button" id="refreshPreview" type="button">Render</button>
+              </div>
+            </div>
+            <div class="side-section-body">
+              <div class="preview-toolbar">
+                <button class="ghost-button" id="zoomOutPreview" type="button">-</button>
+                <button class="ghost-button" id="zoomResetPreview" type="button">100%</button>
+                <button class="ghost-button" id="zoomInPreview" type="button">+</button>
+              </div>
+              <p class="side-hint" id="previewStatus">Waiting for source</p>
+              <div class="preview-wrap compact">
+                <div class="preview-surface" id="previewSurface">
+                  <div class="preview-empty" id="previewEmpty">Preview appears after the local renderer finishes.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="side-section collapsed" id="section-export" data-section="export">
+            <div class="side-section-header">
+              <button class="side-section-toggle" type="button" data-toggle="export" aria-expanded="false">
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="side-section-title">Export</span>
+              </button>
+            </div>
+            <div class="side-section-body">
+              <div class="export-page">
+                <div class="export-hero">
+                  <div>
+                    <span class="export-eyebrow">Current document</span>
+                    <h3>Export the active diagram</h3>
+                    <p>Save the file you are editing now as a polished SVG, PNG, or PDF asset.</p>
+                  </div>
+                  <button class="export-primary-action" id="exportCurrentAs" type="button">
+                    <span class="export-action-icon" aria-hidden="true">OUT</span>
+                    <span>
+                      <strong>Export...</strong>
+                      <small>Choose where to save this diagram</small>
+                    </span>
+                  </button>
+                </div>
+
+                <form class="export-current-panel" id="exportOptions">
+                  <div class="export-setting-row">
+                    <label class="export-field">
+                      <span>Format</span>
+                      <select id="exportFormat">
+                        <option value="svg">SVG</option>
+                        <option value="png">PNG</option>
+                        <option value="pdf">PDF</option>
+                      </select>
+                    </label>
+                    <label class="export-field">
+                      <span>Background</span>
+                      <select id="exportBackground">
+                        <option value="transparent">Transparent</option>
+                        <option value="white">White</option>
+                      </select>
+                    </label>
+                  </div>
+
+                  <div class="export-summary">
+                    <div>
+                      <span class="export-summary-label">Source</span>
+                      <strong id="exportCurrentName">Current diagram</strong>
+                    </div>
+                    <p>Only the active file is exported. Other workspace diagrams are left untouched.</p>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
+
+          <section class="side-section collapsed" id="section-console" data-section="console">
+            <div class="side-section-header">
+              <button class="side-section-toggle" type="button" data-toggle="console" aria-expanded="false">
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="side-section-title">Console</span>
+                <span class="side-section-badge" id="consoleBadge" hidden></span>
+              </button>
+              <div class="side-section-actions">
+                <button class="ghost-button" id="clearConsole" type="button">Clear</button>
+              </div>
+            </div>
+            <div class="side-section-body">
+              <pre id="consoleOutput">Ready.</pre>
+            </div>
+          </section>
+        </aside>
+
+        <section class="stage">
+          <div class="toolbar">
+            <div class="segmented" role="tablist" aria-label="Diagram type">
+              <button id="modeMermaid" class="active" type="button">Mermaid</button>
+              <button id="modePlantUml" type="button">PlantUML</button>
+            </div>
+            <div class="toolbar-spacer"></div>
+            <button class="command-button" id="organizeDiagram"><span class="button-icon">↕</span><span>Organize</span></button>
+            <button class="command-button" id="fitCanvas"><span class="button-icon">□</span><span>Fit</span></button>
+            <span class="toolbar-separator" aria-hidden="true"></span>
+            <button class="command-button" id="addNode"><span class="button-icon">+</span><span>Add Class</span></button>
+            <button class="command-button" id="connectNodes"><span class="button-icon">⟶</span><span>Associate</span></button>
+            <button class="command-button danger" id="deleteNode" hidden>Delete</button>
+            <span class="toolbar-separator" aria-hidden="true"></span>
+            <button class="command-button" id="newFile"><span class="button-icon">◇</span><span>New</span></button>
+            <button class="command-button primary" id="saveFile"><span class="button-icon">✓</span><span>Save</span></button>
+          </div>
+
+          <div class="editor-grid" id="editorGrid">
+            <section class="panel builder-panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Visual Builder</h2>
+                  <p id="builderHint">Flowchart canvas syncs with Mermaid code.</p>
+                </div>
+              </div>
+              <div class="canvas-wrap">
+                <div class="organize-overlay hidden" id="organizeOverlay" aria-live="polite">
+                  <div class="organize-card">
+                    <div class="organize-spinner" aria-hidden="true"></div>
+                    <div>
+                      <strong>Organizing layout</strong>
+                      <span>Reading exported geometry and placing classes...</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="canvas-viewport" id="canvasViewport">
+                  <svg class="edge-layer" id="edgeLayer" aria-hidden="true"></svg>
+                  <div class="canvas" id="canvas" aria-label="Visual diagram builder"></div>
+                </div>
+                <div class="canvas-controls" aria-label="Canvas controls">
+                  <button class="ghost-button" id="zoomOutCanvas" type="button">-</button>
+                  <button class="ghost-button" id="zoomResetCanvas" type="button">100%</button>
+                  <button class="ghost-button" id="zoomInCanvas" type="button">+</button>
+                </div>
+                <div class="minimap" id="minimap" aria-hidden="true"></div>
+                <div class="empty-builder" id="emptyBuilder">
+                  Visual builder is optimized for Mermaid flowcharts. Open or create a flowchart to edit nodes directly.
+                </div>
+              </div>
+            </section>
+
+            <div class="editor-resize-handle" id="editorResizeHandle" role="separator" aria-orientation="vertical" aria-label="Resize editor split"></div>
+
+            <section class="panel code-panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Code</h2>
+                  <p id="currentFile">No file selected</p>
+                </div>
+                <div class="status-pill" id="syncStatus">Synced</div>
+              </div>
+              <textarea id="codeEditor" spellcheck="false" aria-label="Diagram source editor"></textarea>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="context-menu hidden" id="contextMenu" role="menu"></div>
+
+    <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
+
+    <div class="relationship-popover hidden" id="relationshipPopover" role="dialog" aria-label="Relationship editor">
+      <div class="popover-title">Connection</div>
+      <div class="relation-buttons" id="relationButtons">
+        <button type="button" data-relation="--" title="Association">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="3" y1="8" x2="37" y2="8"/></svg>
+          <span class="rel-caption">Assoc</span>
+        </button>
+        <button type="button" data-relation="-->" title="Directed association">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="3" y1="8" x2="34" y2="8"/><polyline points="27,3 36,8 27,13" fill="none"/></svg>
+          <span class="rel-caption">Directed</span>

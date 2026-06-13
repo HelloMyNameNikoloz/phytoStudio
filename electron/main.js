@@ -112,8 +112,44 @@ function createWindow() {
 
   mainWindow.once("ready-to-show", () => {
     writeLaunchLog("Window ready to show.");
+    if (process.env.PHYTO_SMOKE_LOAD === "1") return;
     mainWindow.show();
     mainWindow.focus();
+  });
+
+  mainWindow.webContents.on("console-message", (_event, level, message) => {
+    writeLaunchLog(`Renderer console ${level}: ${message}`);
+  });
+
+  mainWindow.webContents.on("did-finish-load", () => {
+    if (process.env.PHYTO_SMOKE_LOAD !== "1") return;
+    mainWindow.webContents.executeJavaScript(`
+      new Promise((resolve, reject) => {
+        const timeoutAt = Date.now() + 8000;
+        function check() {
+          const ok = document.getElementById("workspace")
+            && document.getElementById("canvas")
+            && document.querySelector(".menu-button")
+            && getComputedStyle(document.documentElement).getPropertyValue("--edge-color").trim();
+          if (ok) {
+            resolve("renderer smoke ok");
+            return;
+          }
+          if (Date.now() > timeoutAt) {
+            reject(new Error("renderer smoke failed: " + document.body.textContent.slice(0, 240)));
+            return;
+          }
+          setTimeout(check, 100);
+        }
+        check();
+      });
+    `).then((message) => {
+      writeLaunchLog(message);
+      app.exit(0);
+    }).catch((error) => {
+      writeLaunchLog(error.stack || error.message);
+      app.exit(1);
+    });
   });
 
   mainWindow.webContents.on("did-fail-load", (_event, errorCode, errorDescription) => {
@@ -289,6 +325,10 @@ ipcMain.handle("window:close", () => {
   getFocusedWindow()?.close();
 });
 
+ipcMain.handle("assets:read-text", async (_event, relativePath) => {
+  return fs.readFile(safeAppAssetPath(relativePath), "utf8");
+});
+
 ipcMain.on("app:dirty", (_event, value) => {
   isDocumentDirty = Boolean(value);
 });
@@ -313,6 +353,15 @@ function safeProjectPath(relativePath) {
   const resolved = path.resolve(projectRoot, relativePath);
   if (!resolved.startsWith(projectRoot)) {
     throw new Error("Path is outside the application.");
+  }
+  return resolved;
+}
+
+function safeAppAssetPath(relativePath) {
+  const appRoot = path.join(projectRoot, "app");
+  const resolved = path.resolve(projectRoot, relativePath);
+  if (!resolved.startsWith(appRoot)) {
+    throw new Error("Path is outside the app assets.");
   }
   return resolved;
 }
@@ -408,6 +457,16 @@ ipcMain.handle("workspace:save-file", async (_event, target, content) => {
   const absolutePath = resolveDiagramTarget(target);
   await fs.writeFile(absolutePath, content, "utf8");
   return { ok: true };
+});
+
+ipcMain.handle("workspace:file-exists", async (_event, target) => {
+  try {
+    await fs.access(resolveDiagramTarget(target));
+    return true;
+  }
+  catch {
+    return false;
+  }
 });
 
 ipcMain.handle("workspace:save-file-as", async (_event, options) => {

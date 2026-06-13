@@ -1,0 +1,180 @@
+:root {
+  --neon-pink: #f72585ff;
+  --indigo-bloom: #7209b7ff;
+  --vivid-royal: #3a0ca3ff;
+  --electric-sapphire: #4361eeff;
+  --sky-aqua: #4cc9f0ff;
+  --bg: #07070c;
+  --surface: rgba(20, 21, 31, 0.8);
+  --surface-strong: rgba(27, 28, 40, 0.96);
+  --surface-soft: rgba(255, 255, 255, 0.055);
+  --line: rgba(255, 255, 255, 0.11);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --text: #f8f8fb;
+  --muted: #a7a8b7;
+  --subtle: #737586;
+  --success: #5ef1b9;
+  --danger: #ff5d8f;
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+  --chrome-bg: rgba(8, 8, 14, 0.84);
+  --panel-bg: rgba(18, 19, 29, 0.98);
+  --control-bg: rgba(12, 13, 21, 0.82);
+  --field-bg: rgba(5, 6, 12, 0.82);
+  --canvas-surface: rgba(7, 8, 14, 0.72);
+  --canvas-grid: rgba(255, 255, 255, 0.042);
+  --node-bg: linear-gradient(145deg, rgba(29, 31, 46, 0.97), rgba(13, 14, 24, 0.94));
+  --node-bg-selected: linear-gradient(145deg, rgba(247, 37, 133, 0.24), rgba(13, 14, 24, 0.94));
+  --node-border: rgba(76, 201, 240, 0.34);
+  --node-border-hover: rgba(76, 201, 240, 0.72);
+  --node-border-selected: var(--neon-pink);
+  --node-title-bg: rgba(76, 201, 240, 0.11);
+  --node-section-text: #e7eaff;
+  --node-section-line: rgba(255, 255, 255, 0.1);
+  --edge-color: #59d8ff;
+  --edge-selected-color: #ff4b98;
+  --edge-label-color: #f8f8fb;
+  --edge-label-stroke: rgba(7, 8, 14, 0.94);
+  --edge-label-bg: rgba(7, 8, 14, 0.86);
+  --edge-marker-open-fill: rgba(7, 8, 14, 0.98);
+  --code-bg: rgba(5, 6, 12, 0.84);
+  --code-text: #f4f6ff;
+  --body-bg:
+    radial-gradient(circle at 18% 0%, rgba(67, 97, 238, 0.17), transparent 28%),
+    radial-gradient(circle at 95% 10%, rgba(247, 37, 133, 0.13), transparent 24%),
+    linear-gradient(135deg, #050508 0%, #0b0b13 52%, #06070d 100%);
+}
+
+body[data-theme="midnight"] {
+  --neon-pink: #ff4d8d;
+  --electric-sapphire: #7c8cff;
+  --sky-aqua: #7dd3fc;
+  --bg: #0a0b10;
+  --surface: rgba(24, 25, 31, 0.86);
+  --surface-strong: rgba(31, 32, 40, 0.98);
+  --surface-soft: rgba(255, 255, 255, 0.06);
+  --line: rgba(255, 255, 255, 0.12);
+  --line-strong: rgba(255, 255, 255, 0.22);
+  --canvas-surface: rgba(9, 10, 16, 0.8);
+  --canvas-grid: rgba(255, 255, 255, 0.045);
+  --node-bg: linear-gradient(145deg, rgba(33, 35, 46, 0.98), rgba(15, 16, 23, 0.96));
+  --node-bg-selected: linear-gradient(145deg, rgba(255, 77, 141, 0.26), rgba(15, 16, 23, 0.96));
+  --edge-color: #86e3ff;
+  --edge-selected-color: #ff5e9d;
+  --body-bg: linear-gradient(135deg, #07080d 0%, #11131a 55%, #090a10 100%);
+}
+
+body[data-theme="forest"] {
+  --neon-pink: #9ef01a;
+  --electric-sapphire: #2dd4bf;
+  --sky-aqua: #7ee787;
+  --bg: #06110d;
+  --surface: rgba(13, 31, 24, 0.84);
+  --surface-strong: rgba(13, 34, 26, 0.98);
+  --surface-soft: rgba(126, 231, 135, 0.075);
+  --line: rgba(180, 255, 210, 0.14);
+  --line-strong: rgba(180, 255, 210, 0.24);
+  --canvas-surface: rgba(5, 18, 14, 0.78);
+  --canvas-grid: rgba(180, 255, 210, 0.06);
+  --node-bg: linear-gradient(145deg, rgba(18, 44, 34, 0.98), rgba(7, 21, 16, 0.96));
+  --node-bg-selected: linear-gradient(145deg, rgba(158, 240, 26, 0.23), rgba(7, 21, 16, 0.96));
+  --node-border: rgba(126, 231, 135, 0.4);
+  --node-border-hover: rgba(126, 231, 135, 0.82);
+  --node-title-bg: rgba(126, 231, 135, 0.12);
+  --edge-color: #7ee787;
+  --edge-selected-color: #d7ff73;
+  --body-bg:
+    radial-gradient(circle at 16% 0%, rgba(45, 212, 191, 0.15), transparent 30%),
+    linear-gradient(135deg, #04100c 0%, #0b1812 60%, #050c09 100%);
+}
+
+body[data-theme="daylight"] {
+  --neon-pink: #d6336c;
+  --electric-sapphire: #2563eb;
+  --sky-aqua: #0284c7;
+  --bg: #f6f8fb;
+  --surface: rgba(255, 255, 255, 0.88);
+  --surface-strong: rgba(255, 255, 255, 0.98);
+  --surface-soft: rgba(2, 132, 199, 0.08);
+  --line: rgba(15, 23, 42, 0.13);
+  --line-strong: rgba(15, 23, 42, 0.22);
+  --text: #111827;
+  --muted: #526173;
+  --subtle: #7b8797;
+  --shadow: 0 24px 70px rgba(15, 23, 42, 0.16);
+  --chrome-bg: rgba(255, 255, 255, 0.82);
+  --panel-bg: rgba(255, 255, 255, 0.98);
+  --control-bg: rgba(255, 255, 255, 0.84);
+  --field-bg: rgba(255, 255, 255, 0.92);
+  --canvas-surface: rgba(244, 248, 252, 0.86);
+  --canvas-grid: rgba(15, 23, 42, 0.075);
+  --node-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(229, 237, 248, 0.96));
+  --node-bg-selected: linear-gradient(145deg, rgba(214, 51, 108, 0.14), rgba(255, 255, 255, 0.98));
+  --node-border: rgba(37, 99, 235, 0.38);
+  --node-border-hover: rgba(37, 99, 235, 0.78);
+  --node-title-bg: rgba(37, 99, 235, 0.11);
+  --node-section-text: #263449;
+  --node-section-line: rgba(15, 23, 42, 0.12);
+  --edge-color: #075985;
+  --edge-selected-color: #be185d;
+  --edge-label-color: #111827;
+  --edge-label-stroke: rgba(248, 250, 252, 0.96);
+  --edge-label-bg: rgba(255, 255, 255, 0.92);
+  --edge-marker-open-fill: rgba(255, 255, 255, 0.98);
+  --code-bg: rgba(255, 255, 255, 0.94);
+  --code-text: #111827;
+  --body-bg:
+    radial-gradient(circle at 20% 0%, rgba(37, 99, 235, 0.13), transparent 28%),
+    linear-gradient(135deg, #f8fafc 0%, #eef3fb 58%, #f6f8fb 100%);
+}
+
+body[data-theme="paper"] {
+  --neon-pink: #b4235a;
+  --electric-sapphire: #4f46e5;
+  --sky-aqua: #0f766e;
+  --bg: #fbfaf7;
+  --surface: rgba(255, 255, 255, 0.9);
+  --surface-strong: rgba(255, 255, 255, 0.99);
+  --surface-soft: rgba(15, 118, 110, 0.075);
+  --line: rgba(54, 48, 39, 0.14);
+  --line-strong: rgba(54, 48, 39, 0.24);
+  --text: #1f2933;
+  --muted: #61717f;
+  --subtle: #87929c;
+  --shadow: 0 24px 70px rgba(54, 48, 39, 0.14);
+  --chrome-bg: rgba(255, 253, 247, 0.84);
+  --panel-bg: rgba(255, 253, 247, 0.98);
+  --control-bg: rgba(255, 253, 247, 0.86);
+  --field-bg: rgba(255, 255, 255, 0.92);
+  --canvas-surface: rgba(251, 250, 247, 0.88);
+  --canvas-grid: rgba(54, 48, 39, 0.085);
+  --node-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(239, 244, 239, 0.96));
+  --node-bg-selected: linear-gradient(145deg, rgba(180, 35, 90, 0.13), rgba(255, 255, 255, 0.98));
+  --node-border: rgba(15, 118, 110, 0.38);
+  --node-border-hover: rgba(15, 118, 110, 0.78);
+  --node-title-bg: rgba(15, 118, 110, 0.11);
+  --node-section-text: #29343d;
+  --node-section-line: rgba(54, 48, 39, 0.13);
+  --edge-color: #0f766e;
+  --edge-selected-color: #b4235a;
+  --edge-label-color: #1f2933;
+  --edge-label-stroke: rgba(255, 253, 247, 0.96);
+  --edge-label-bg: rgba(255, 253, 247, 0.93);
+  --edge-marker-open-fill: rgba(255, 253, 247, 0.98);
+  --code-bg: rgba(255, 255, 255, 0.94);
+  --code-text: #1f2933;
+  --body-bg: linear-gradient(135deg, #fffdf7 0%, #f3f6f2 58%, #fbfaf7 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;

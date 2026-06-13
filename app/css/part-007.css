@@ -1,0 +1,180 @@
+.editor-resize-handle {
+  position: relative;
+  z-index: 12;
+  cursor: col-resize;
+}
+
+.editor-resize-handle::before {
+  position: absolute;
+  inset: 0 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  content: "";
+  transition: background 0.14s ease, box-shadow 0.14s ease;
+}
+
+.editor-resize-handle:hover::before,
+.editor-grid.resizing .editor-resize-handle::before {
+  background: rgba(76, 201, 240, 0.42);
+  box-shadow: 0 0 0 1px rgba(76, 201, 240, 0.22);
+}
+
+.panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.panel-header {
+  min-height: 58px;
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-header h2 {
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.panel-header p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.canvas-wrap {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(var(--canvas-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px),
+    var(--canvas-surface);
+  background-size: 28px 28px;
+}
+
+.canvas-viewport {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  cursor: grab;
+}
+
+.canvas-viewport.panning {
+  cursor: grabbing;
+}
+
+.stage.organizing .canvas-viewport,
+.stage.organizing #codeEditor {
+  pointer-events: none;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 2400px;
+  height: 1600px;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.edge-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 2400px;
+  height: 1600px;
+  /* The SVG root must not capture clicks in its empty area, otherwise it
+     swallows every node/canvas interaction. Only the .edge-hit lines below
+     opt back in via pointer-events: stroke. */
+  pointer-events: none;
+  transform-origin: 0 0;
+}
+
+.canvas-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--control-bg);
+  backdrop-filter: blur(16px);
+}
+
+.minimap {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 10;
+  width: 156px;
+  height: 106px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--control-bg);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.32);
+  overflow: hidden;
+}
+
+.minimap-node {
+  position: absolute;
+  border-radius: 3px;
+  background: rgba(76, 201, 240, 0.52);
+}
+
+.minimap-node.selected {
+  background: rgba(247, 37, 133, 0.78);
+}
+
+.minimap-view {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.organize-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 22;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 25%, rgba(255, 255, 255, 0.08) 37%, rgba(255, 255, 255, 0.035) 63%),
+    rgba(7, 8, 14, 0.58);
+  background-size: 420px 100%, auto;
+  animation: organize-sheen 1.15s ease-in-out infinite;
+  backdrop-filter: blur(2px);
+}
+
+.organize-overlay.hidden {
+  display: none;
+}
+
+.organize-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(340px, calc(100% - 40px));
+  padding: 14px;
+  border: 1px solid rgba(76, 201, 240, 0.3);
+  border-radius: 9px;
+  background: rgba(18, 19, 29, 0.94);
+  box-shadow: var(--shadow);
+}
+
+.organize-card strong,
+.organize-card span {
+  display: block;
+}

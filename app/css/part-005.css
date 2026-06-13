@@ -1,0 +1,180 @@
+
+.workspace.panel-overlay-open .side-section-body,
+.workspace.console-panel-open .side-section-body {
+  flex: 1 1 auto;
+}
+
+.workspace.panel-overlay-open #section-preview .preview-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.workspace.panel-overlay-open #section-preview .preview-surface {
+  place-items: center;
+  min-height: 100%;
+}
+
+.workspace.console-panel-open #consoleOutput {
+  flex: 1 1 auto;
+}
+
+.side-panel.organizing .side-section-header,
+.side-panel.organizing .side-section-body {
+  pointer-events: none;
+  opacity: 0.58;
+}
+
+.side-section.collapsed .side-section-body {
+  display: none;
+}
+
+.side-section-badge,
+.activity-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--neon-pink);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.activity-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+}
+
+.side-search {
+  width: 100%;
+  min-height: 32px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(5, 6, 12, 0.82);
+  color: var(--text);
+  font-size: 12px;
+  outline: 0;
+}
+
+.side-search:focus {
+  border-color: rgba(76, 201, 240, 0.45);
+}
+
+.files-startbar {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(260px, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.files-new-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 10px 12px;
+  border: 1px solid rgba(76, 201, 240, 0.28);
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(67, 97, 238, 0.34), rgba(76, 201, 240, 0.12));
+  text-align: left;
+  cursor: pointer;
+}
+
+.files-new-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border: 1px solid rgba(76, 201, 240, 0.26);
+  border-radius: 8px;
+  color: var(--sky-aqua);
+  font-weight: 850;
+}
+
+.files-new-button strong,
+.files-new-button small {
+  display: block;
+}
+
+.files-new-button strong {
+  font-size: 12px;
+}
+
+.files-new-button small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.file-recent[hidden] {
+  display: none;
+}
+
+.file-group-label {
+  margin: 4px 0 2px;
+  color: var(--subtle);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-height: 0;
+  padding: 0;
+}
+
+.file-folder {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  overflow: hidden;
+}
+
+.file-folder + .file-folder {
+  margin-top: 8px;
+}
+
+.file-folder summary {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.file-folder summary::marker {
+  color: var(--subtle);
+}
+
+.file-folder summary small {
+  color: var(--subtle);
+  font-size: 10px;
+}
+
+.file-folder-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+}
+
+#recentList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));

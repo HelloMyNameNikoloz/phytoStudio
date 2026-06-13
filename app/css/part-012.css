@@ -1,0 +1,180 @@
+
+.properties-form input,
+.properties-form textarea,
+.properties-form select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(5, 6, 12, 0.82);
+  color: var(--text);
+  padding: 8px;
+  outline: 0;
+}
+
+.properties-form textarea {
+  resize: vertical;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.export-page {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 18px;
+  width: min(1040px, 100%);
+  margin: 0 auto;
+  padding: 8px 0 2px;
+}
+
+.export-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 18px;
+  align-items: stretch;
+  padding: 22px;
+  border: 1px solid rgba(76, 201, 240, 0.18);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(67, 97, 238, 0.14), rgba(247, 37, 133, 0.08)),
+    rgba(255, 255, 255, 0.035);
+}
+
+.export-eyebrow {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--sky-aqua);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.export-hero h3 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.export-hero p {
+  max-width: 640px;
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.export-primary-action {
+  border: 1px solid var(--line);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.export-primary-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 96px;
+  padding: 16px;
+  border-color: rgba(76, 201, 240, 0.35);
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(67, 97, 238, 0.58), rgba(76, 201, 240, 0.16));
+  text-align: left;
+}
+
+.export-action-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  border: 1px solid rgba(76, 201, 240, 0.28);
+  background: rgba(5, 6, 12, 0.38);
+  color: var(--sky-aqua);
+  font-weight: 850;
+}
+
+.export-action-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+.export-primary-action strong,
+.export-primary-action small {
+  display: block;
+}
+
+.export-primary-action strong {
+  font-size: 14px;
+}
+
+.export-primary-action small {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.export-current-panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.export-setting-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.export-field {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.export-field select {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(5, 6, 12, 0.72);
+  color: var(--text);
+  padding: 0 10px;
+  outline: 0;
+}
+
+.export-field select:focus {
+  border-color: rgba(76, 201, 240, 0.45);
+}
+
+.export-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, auto);
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid rgba(76, 201, 240, 0.14);
+  border-radius: 10px;
+  background: rgba(5, 6, 12, 0.38);
+}
+
+.export-summary strong {
+  display: block;
+  margin-top: 5px;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.export-summary p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: right;

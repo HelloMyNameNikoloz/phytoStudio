@@ -1,0 +1,180 @@
+    <div class="app-shell">
+      <header class="titlebar">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>
+            <h1>Phyto Studio</h1>
+            <p>Local PlantUML and Mermaid builder</p>
+          </div>
+        </div>
+
+        <nav class="app-menu" aria-label="Application menu">
+          <div class="menu-group">
+            <button class="menu-button" type="button" data-menu="fileMenu">File</button>
+            <div class="menu-popover" id="fileMenu">
+              <button type="button" id="menuNewFile">New Diagram</button>
+              <button type="button" id="menuOpenWorkspace">Open Workspace...</button>
+              <button type="button" id="menuSaveFile">Save</button>
+              <button type="button" id="menuSaveAs">Save As...</button>
+              <span></span>
+              <button type="button" id="menuExport">Export</button>
+              <button type="button" id="menuExportAs">Export As...</button>
+              <button type="button" id="menuOpenOutput">Open Output Folder</button>
+              <button type="button" id="menuRevealFile">Reveal Active File</button>
+            </div>
+          </div>
+          <div class="menu-group">
+            <button class="menu-button" type="button" data-menu="editMenu">Edit</button>
+            <div class="menu-popover" id="editMenu">
+              <button type="button" id="menuUndo">Undo</button>
+              <button type="button" id="menuRedo">Redo</button>
+              <span></span>
+              <button type="button" id="menuDuplicate">Duplicate Selection</button>
+              <button type="button" id="menuDelete">Delete Selection</button>
+              <button type="button" id="menuCommandPalette">Command Palette...</button>
+            </div>
+          </div>
+          <div class="menu-group">
+            <button class="menu-button" type="button" data-menu="viewMenu">View</button>
+            <div class="menu-popover" id="viewMenu">
+              <button type="button" id="menuBuilder">Builder</button>
+              <button type="button" id="menuFiles">Files</button>
+              <button type="button" id="menuPreview">Live Preview</button>
+              <button type="button" id="menuProperties">Properties</button>
+              <button type="button" id="menuConsole">Console</button>
+              <span></span>
+              <button type="button" id="menuFitCanvas">Fit Canvas</button>
+              <button type="button" id="menuZoomResetCanvas">Reset Canvas Zoom</button>
+            </div>
+          </div>
+          <div class="menu-group">
+            <button class="menu-button" type="button" data-menu="diagramMenu">Diagram</button>
+            <div class="menu-popover" id="diagramMenu">
+              <button type="button" id="menuAddClass">Add Class / Node</button>
+              <button type="button" id="menuAddRelationship">Add Relationship</button>
+              <button type="button" id="menuOrganize">Organize From Export</button>
+              <button type="button" id="menuValidate">Validate Preview</button>
+              <button type="button" id="menuAutoLayout">Auto Layout</button>
+            </div>
+          </div>
+          <button class="menu-button" type="button" id="menuSettings">Settings</button>
+        </nav>
+
+        <div class="titlebar-status" id="saveStatus">Autosave on</div>
+
+        <div class="window-actions">
+          <button class="icon-button" id="minimizeWindow" title="Minimize" aria-label="Minimize">
+            <span></span>
+          </button>
+          <button class="icon-button" id="maximizeWindow" title="Maximize" aria-label="Maximize">
+            <span></span>
+          </button>
+          <button class="icon-button close" id="closeWindow" title="Close" aria-label="Close">
+            <span></span>
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace" id="workspace">
+        <aside class="activity-bar" aria-label="Workspace sections">
+          <button class="activity-button" id="activityBuilder" type="button" title="Toggle sidebar (focus canvas)">Build</button>
+          <button class="activity-button" id="activityFiles" type="button" title="Files" data-reveal="files">Files</button>
+          <button class="activity-button" id="activityPreview" type="button" title="Live Preview" data-reveal="preview">Preview</button>
+          <button class="activity-button" id="activityExport" type="button" title="Export" data-reveal="export">Export</button>
+          <button class="activity-button" id="activityConsole" type="button" title="Console" data-reveal="console">
+            Console
+            <span class="activity-badge" id="activityConsoleBadge" hidden></span>
+          </button>
+        </aside>
+
+        <button class="side-overlay-backdrop" id="sideOverlayBackdrop" type="button" aria-label="Close panel"></button>
+        <aside class="side-panel" id="sidePanel" aria-label="Inspector">
+          <div class="console-resize-handle" id="consoleResizeHandle" role="separator" aria-orientation="horizontal" aria-label="Resize console"></div>
+          <button class="side-panel-close" id="sidePanelClose" type="button" title="Close panel" aria-label="Close panel">
+            <span></span>
+            <span></span>
+          </button>
+          <section class="side-section" id="section-files" data-section="files">
+            <div class="side-section-header">
+              <button class="side-section-toggle" type="button" data-toggle="files" aria-expanded="true">
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="side-section-title">Files</span>
+              </button>
+              <div class="side-section-actions">
+                <button class="ghost-button" id="refreshFiles" type="button">Refresh</button>
+              </div>
+            </div>
+            <div class="side-section-body">
+              <div class="files-startbar">
+                <button class="files-new-button" id="newDiagramFromFiles" type="button">
+                  <span class="files-new-icon" aria-hidden="true">+</span>
+                  <span>
+                    <strong>New Diagram</strong>
+                    <small>Create Mermaid or PlantUML</small>
+                  </span>
+                </button>
+                <input class="side-search" id="fileSearch" type="text" placeholder="Search files..." autocomplete="off" spellcheck="false" />
+              </div>
+              <div class="file-recent" id="fileRecent" hidden>
+                <div class="file-group-label">Recent</div>
+                <div class="file-list" id="recentList"></div>
+              </div>
+              <div class="file-list" id="fileList"></div>
+            </div>
+          </section>
+
+          <section class="side-section" id="section-properties" data-section="properties">
+            <div class="side-section-header">
+              <button class="side-section-toggle" type="button" data-toggle="properties" aria-expanded="true">
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="side-section-title">Properties</span>
+              </button>
+            </div>
+            <div class="side-section-body">
+              <div class="properties-empty" id="propertiesEmpty">Select a class, node, or relationship.</div>
+
+              <form class="properties-form hidden" id="nodeProperties">
+                <label>
+                  Name
+                  <input id="propNodeName" type="text" autocomplete="off" spellcheck="false" />
+                </label>
+                <label>
+                  Attributes
+                  <textarea id="propNodeAttributes" rows="6" spellcheck="false"></textarea>
+                </label>
+                <label>
+                  Methods
+                  <textarea id="propNodeMethods" rows="6" spellcheck="false"></textarea>
+                </label>
+                <button class="tool-button primary" id="applyNodeProperties" type="button">Apply Class</button>
+              </form>
+
+              <form class="properties-form hidden" id="edgeProperties">
+                <label>
+                  Relationship
+                  <select id="propEdgeRelation">
+                    <option value="--">Association</option>
+                    <option value="-->">Directed association</option>
+                    <option value="<|--">Inheritance</option>
+                    <option value="*--">Composition</option>
+                    <option value="o--">Aggregation</option>
+                    <option value="..>">Dependency</option>
+                  </select>
+                </label>
+                <label>
+                  Source multiplicity
+                  <input id="propEdgeFromMultiplicity" type="text" placeholder="1" autocomplete="off" spellcheck="false" />
+                </label>
+                <label>
+                  Target multiplicity
+                  <input id="propEdgeToMultiplicity" type="text" placeholder="0..*" autocomplete="off" spellcheck="false" />
+                </label>
+                <label>
+                  Label
+                  <input id="propEdgeLabel" type="text" placeholder="manages" autocomplete="off" spellcheck="false" />
+                </label>
+                <button class="tool-button primary" id="applyEdgeProperties" type="button">Apply Relationship</button>
+              </form>
+            </div>
+          </section>
+

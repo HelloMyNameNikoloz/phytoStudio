@@ -1,0 +1,180 @@
+  color: var(--text);
+  background: var(--body-bg);
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: 0;
+}
+
+button,
+textarea,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-rows: 52px 1fr;
+  width: 100%;
+  height: 100%;
+}
+
+.titlebar {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+  height: 52px;
+  padding: 0 12px 0 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--chrome-bg);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-app-region: drag;
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 168px;
+}
+
+.brand-mark {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background:
+    linear-gradient(135deg, var(--neon-pink), var(--electric-sapphire) 52%, var(--sky-aqua)),
+    #11121a;
+  box-shadow: 0 8px 22px rgba(76, 201, 240, 0.16);
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+.titlebar h1 {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.titlebar p {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.app-menu {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 100%;
+  -webkit-app-region: no-drag;
+}
+
+.menu-group {
+  position: relative;
+}
+
+.menu-button {
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.menu-button:hover,
+.menu-group.open .menu-button {
+  border-color: var(--line);
+  background: var(--surface-soft);
+  color: var(--text);
+}
+
+.menu-popover {
+  position: absolute;
+  top: 34px;
+  left: 0;
+  z-index: 50;
+  display: none;
+  min-width: 210px;
+  padding: 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: rgba(18, 19, 29, 0.98);
+  box-shadow: var(--shadow);
+}
+
+.menu-group.open .menu-popover {
+  display: grid;
+  gap: 2px;
+}
+
+.menu-popover button {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-popover button:hover {
+  background: rgba(76, 201, 240, 0.1);
+}
+
+.menu-popover button:disabled {
+  color: var(--subtle);
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.menu-popover span {
+  height: 1px;
+  margin: 4px;
+  background: var(--line);
+}
+
+.menu-popover .menu-label {
+  height: auto;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-popover kbd {
+  color: var(--subtle);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.settings-popover {
+  min-width: 260px;
+  gap: 8px;
+  padding: 10px;
+}
+
+.settings-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+  color: var(--muted);
+  font-size: 12px;
+}

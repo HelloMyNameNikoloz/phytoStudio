@@ -1,0 +1,83 @@
+        </button>
+        <button type="button" data-relation="<|--" title="Inheritance">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="3" y1="8" x2="26" y2="8"/><polygon points="26,3 37,8 26,13" fill="none"/></svg>
+          <span class="rel-caption">Inherit</span>
+        </button>
+        <button type="button" data-relation="*--" title="Composition">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="15" y1="8" x2="37" y2="8"/><polygon points="3,8 9,4 15,8 9,12" fill="currentColor"/></svg>
+          <span class="rel-caption">Compose</span>
+        </button>
+        <button type="button" data-relation="o--" title="Aggregation">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="15" y1="8" x2="37" y2="8"/><polygon points="3,8 9,4 15,8 9,12" fill="none"/></svg>
+          <span class="rel-caption">Aggregate</span>
+        </button>
+        <button type="button" data-relation="..>" title="Dependency">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="3" y1="8" x2="34" y2="8" stroke-dasharray="4 3"/><polyline points="27,3 36,8 27,13" fill="none"/></svg>
+          <span class="rel-caption">Depend</span>
+        </button>
+      </div>
+      <label>
+        Source multiplicity
+        <input id="popoverFromMultiplicity" type="text" placeholder="1" autocomplete="off" spellcheck="false" />
+      </label>
+      <label>
+        Target multiplicity
+        <input id="popoverToMultiplicity" type="text" placeholder="0..*" autocomplete="off" spellcheck="false" />
+      </label>
+      <label>
+        Label
+        <input id="popoverLabel" type="text" placeholder="manages" autocomplete="off" spellcheck="false" />
+      </label>
+      <div class="popover-actions">
+        <button type="button" id="popoverDeleteRelationship">Delete</button>
+        <button type="button" id="popoverCloseRelationship">Done</button>
+      </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="commandPalette">
+      <section class="command-palette" role="dialog" aria-label="Command palette">
+        <input id="commandSearch" type="text" placeholder="Type a command" />
+        <div class="command-list" id="commandList"></div>
+      </section>
+    </div>
+
+    <div class="modal-backdrop hidden" id="settingsModal">
+      <section class="preferences-modal" role="dialog" aria-label="Preferences">
+        <div class="preferences-header">
+          <div>
+            <span class="preferences-eyebrow">Preferences</span>
+            <h2>Studio settings</h2>
+            <p>Control saving, appearance, and editing behavior for this workspace.</p>
+          </div>
+          <button class="side-panel-close" id="settingsClose" type="button" title="Close preferences" aria-label="Close preferences">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+        <div class="preferences-grid">
+          <label class="preference-card">
+            <span class="preference-icon">A</span>
+            <span>
+              <strong>Autosave edits</strong>
+              <small>Write the active saved file shortly after each edit.</small>
+            </span>
+            <input id="settingsAutosave" type="checkbox" />
+          </label>
+          <label class="preference-card wide">
+            <span class="preference-icon">T</span>
+            <span>
+              <strong>Color theme</strong>
+              <small>Choose one of five focused editor themes.</small>
+            </span>
+            <select id="settingsTheme">
+              <option value="aurora">Aurora Dark</option>
+              <option value="midnight">Midnight Graphite</option>
+              <option value="forest">Forest Dark</option>
+              <option value="daylight">Daylight</option>
+              <option value="paper">Paper Light</option>
+            </select>
+          </label>
+        </div>
+      </section>
+    </div>
+
