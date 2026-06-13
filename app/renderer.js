@@ -39,8 +39,16 @@ const api = window.phytoStudio || {
       { name: "flowchart.mmd", kind: "Mermaid", relativePath: "diagrams/mermaid/flowchart.mmd" },
       { name: "class-diagram.puml", kind: "PlantUML", relativePath: "diagrams/plantuml/class-diagram.puml" }
     ],
-    readFile: async (relativePath) => relativePath.endsWith(".puml") ? templates.PlantUML : templates.Mermaid,
+    readFile: async (target) => (target.relativePath || target.absolutePath || target).endsWith(".puml") ? templates.PlantUML : templates.Mermaid,
     saveFile: async () => ({ ok: true }),
+    saveFileAs: async ({ kind, defaultName }) => ({
+      ok: true,
+      file: {
+        name: defaultName,
+        kind,
+        relativePath: `${kind === "PlantUML" ? "diagrams/plantuml" : "diagrams/mermaid"}/${defaultName}`
+      }
+    }),
     saveNewFile: async (kind, fileName) => ({
       name: fileName,
       kind,
@@ -304,10 +312,10 @@ function persistDraft() {
 async function autoSaveActiveFile() {
   if (!state.settings.autosave || !state.activeFile || !state.isDirty) return;
   try {
-    await api.workspace.saveFile(state.activeFile.relativePath, els.codeEditor.value);
+    await api.workspace.saveFile(state.activeFile, els.codeEditor.value);
     setDirty(false);
     updateSaveStatus(`Autosaved ${formatTime()}`, "ok");
-    state.thumbnailCache.delete(state.activeFile.relativePath);
+    state.thumbnailCache.delete(fileKey(state.activeFile));
     persistDraft();
   }
   catch (error) {
@@ -324,10 +332,19 @@ function scheduleDraftSave() {
   }, 650);
 }
 
+function fileKey(file) {
+  return file?.absolutePath || file?.relativePath || "";
+}
+
+function fileDisplayPath(file) {
+  return file?.relativePath || file?.absolutePath || "Unsaved current diagram";
+}
+
 function rememberRecentFile(file) {
   if (!file) return;
+  const key = fileKey(file);
   const recent = JSON.parse(localStorage.getItem("phyto:recent") || "[]")
-    .filter((item) => item.relativePath !== file.relativePath);
+    .filter((item) => fileKey(item) !== key);
   recent.unshift(file);
   localStorage.setItem("phyto:recent", JSON.stringify(recent.slice(0, 12)));
   localStorage.setItem("phyto:lastFile", JSON.stringify(file));
@@ -642,7 +659,7 @@ function setDirty(isDirty) {
 
 function updateExportPanel() {
   if (!els.exportCurrentName) return;
-  els.exportCurrentName.textContent = state.activeFile?.relativePath || "Unsaved current diagram";
+  els.exportCurrentName.textContent = fileDisplayPath(state.activeFile);
 }
 
 function clearSelection({ hidePopover = true } = {}) {
@@ -1802,7 +1819,7 @@ function updateBuilderFromEditor() {
 
 function fileMatchesSearch(file, query) {
   if (!query) return true;
-  return file.name.toLowerCase().includes(query) || file.relativePath.toLowerCase().includes(query);
+  return file.name.toLowerCase().includes(query) || fileDisplayPath(file).toLowerCase().includes(query);
 }
 
 function fileInitials(file) {
@@ -1815,14 +1832,15 @@ function setThumbnailFallback(target, file) {
 
 async function loadFileThumbnail(file, target) {
   if (!target.isConnected) return;
-  const cached = state.thumbnailCache.get(file.relativePath);
+  const key = fileKey(file);
+  const cached = state.thumbnailCache.get(key);
   if (cached) {
     target.innerHTML = cached;
     return;
   }
 
   try {
-    const source = await api.workspace.readFile(file.relativePath);
+    const source = await api.workspace.readFile(file);
     const result = await api.preview.render(file.kind, source);
     if (!result?.ok || !result.svg) throw new Error(result?.error || "No preview SVG");
 
@@ -1831,11 +1849,19 @@ async function loadFileThumbnail(file, target) {
     const svg = wrapper.querySelector("svg");
     if (!svg) throw new Error("Preview did not contain SVG");
 
+    const width = parseSvgNumber(svg.getAttribute("width") || "");
+    const height = parseSvgNumber(svg.getAttribute("height") || "");
+    if (!svg.getAttribute("viewBox") && width > 0 && height > 0) {
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    }
     svg.removeAttribute("width");
     svg.removeAttribute("height");
+    svg.style.width = "";
+    svg.style.height = "";
+    svg.style.background = "";
     svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
     const html = svg.outerHTML;
-    state.thumbnailCache.set(file.relativePath, html);
+    state.thumbnailCache.set(key, html);
     if (target.isConnected) target.innerHTML = html;
   }
   catch {
@@ -1852,7 +1878,7 @@ function makeFileItem(file) {
   const button = document.createElement("button");
   button.className = "file-item";
   button.type = "button";
-  const isActive = state.activeFile?.relativePath === file.relativePath;
+  const isActive = fileKey(state.activeFile) === fileKey(file);
   button.classList.toggle("active", isActive);
   const dirtyMarker = isActive && state.isDirty
     ? '<span class="file-dirty" title="Unsaved changes"></span>'
@@ -1928,10 +1954,11 @@ function renderRecent(query) {
     recent = [];
   }
 
-  const existing = new Map(state.files.map((file) => [file.relativePath, file]));
+  const existing = new Map(state.files.map((file) => [fileKey(file), file]));
   const items = recent
-    .filter((file) => existing.has(file.relativePath))
-    .filter((file) => file.relativePath !== state.activeFile?.relativePath)
+    .map((file) => existing.get(fileKey(file)) || file)
+    .filter((file) => fileKey(file))
+    .filter((file) => fileKey(file) !== fileKey(state.activeFile))
     .filter((file) => fileMatchesSearch(file, query))
     .slice(0, 4);
 
@@ -1942,17 +1969,17 @@ function renderRecent(query) {
 
   els.fileRecent.hidden = false;
   for (const file of items) {
-    els.recentList.appendChild(makeFileItem(existing.get(file.relativePath)));
+    els.recentList.appendChild(makeFileItem(file));
   }
 }
 
 function showFileMenu(file, x, y) {
   const items = [
     ["Open", () => openFile(file)],
-    ["Rename...", () => renameFilePrompt(file)],
-    ["Duplicate", () => duplicateFile(file)],
-    ["Reveal in Explorer", () => api.workspace.revealFile(file.relativePath)],
-    ["Delete", () => deleteFilePrompt(file), ICON_TRASH]
+    ["Save Copy As...", () => renameFilePrompt(file)],
+    ...(file.relativePath ? [["Duplicate", () => duplicateFile(file)]] : []),
+    ["Reveal in Explorer", () => api.workspace.revealFile(file)],
+    ...(file.relativePath ? [["Delete", () => deleteFilePrompt(file), ICON_TRASH]] : [])
   ];
 
   els.contextMenu.innerHTML = "";
@@ -1977,20 +2004,26 @@ function showFileMenu(file, x, y) {
 }
 
 async function renameFilePrompt(file) {
-  const nextName = window.prompt("Rename file", file.name);
-  if (!nextName || nextName === file.name) return;
   try {
-    const updated = await api.workspace.renameFile(file.relativePath, nextName);
-    if (state.activeFile?.relativePath === file.relativePath) {
-      state.activeFile = updated;
-      els.currentFile.textContent = updated.relativePath;
+    const content = await api.workspace.readFile(file);
+    const result = await api.workspace.saveFileAs({
+      kind: file.kind,
+      content,
+      defaultName: file.name
+    });
+    if (result?.canceled || !result?.file) return;
+    if (fileKey(state.activeFile) === fileKey(file)) {
+      state.activeFile = result.file;
+      els.currentFile.textContent = fileDisplayPath(result.file);
       updateExportPanel();
+      rememberRecentFile(result.file);
+      persistDraft();
     }
     await loadFiles();
-    showToast(`Renamed to ${updated.name}`, "success");
+    showToast(`Saved as ${result.file.name}`, "success");
   }
   catch (error) {
-    showToast(`Rename failed: ${error.message}`, "error");
+    showToast(`Save as failed: ${error.message}`, "error");
   }
 }
 
@@ -2034,10 +2067,10 @@ async function openFile(file) {
     if (!shouldContinue) return;
   }
 
-  const content = await api.workspace.readFile(file.relativePath);
+  const content = await api.workspace.readFile(file);
   state.activeFile = file;
   els.codeEditor.value = content;
-  els.currentFile.textContent = file.relativePath;
+  els.currentFile.textContent = fileDisplayPath(file);
   updateExportPanel();
   setMode(file.kind);
   setDirty(false);
@@ -2073,26 +2106,17 @@ async function createFile(kind, fileName, content) {
 async function saveActiveFile() {
   try {
     if (!state.activeFile) {
-      const defaultName = state.mode === "PlantUML" ? "new-diagram.puml" : "new-diagram.mmd";
-      const fileName = window.prompt("File name", defaultName);
-      if (!fileName) return false;
-      const file = await createFile(state.mode, fileName, els.codeEditor.value);
-      if (!file) return false;
-      state.activeFile = file;
-      els.currentFile.textContent = file.relativePath;
-      updateExportPanel();
-      await loadFiles();
-      renderFileList();
+      return saveAsFile();
     }
     else {
-      await api.workspace.saveFile(state.activeFile.relativePath, els.codeEditor.value);
+      await api.workspace.saveFile(state.activeFile, els.codeEditor.value);
     }
     setDirty(false);
     updateSaveStatus(`Saved ${formatTime()}`, "ok");
-    state.thumbnailCache.delete(state.activeFile.relativePath);
+    state.thumbnailCache.delete(fileKey(state.activeFile));
     rememberRecentFile(state.activeFile);
     persistDraft();
-    appendConsole(`Saved ${state.activeFile.relativePath}`);
+    appendConsole(`Saved ${fileDisplayPath(state.activeFile)}`);
     showToast(`Saved ${state.activeFile.name || state.activeFile.relativePath}`, "success");
     return true;
   }
@@ -2105,23 +2129,26 @@ async function saveActiveFile() {
 
 async function saveAsFile() {
   const defaultName = state.activeFile?.name || (state.mode === "PlantUML" ? "new-diagram.puml" : "new-diagram.mmd");
-  const fileName = window.prompt("Save as", defaultName);
-  if (!fileName) return false;
 
   try {
-    const file = await createFile(state.mode, fileName, els.codeEditor.value);
-    if (!file) return false;
+    const result = await api.workspace.saveFileAs({
+      kind: state.mode,
+      content: els.codeEditor.value,
+      defaultName
+    });
+    if (result?.canceled || !result?.file) return false;
+    const file = result.file;
     state.activeFile = file;
-    els.currentFile.textContent = file.relativePath;
+    els.currentFile.textContent = fileDisplayPath(file);
     updateExportPanel();
     await loadFiles();
     renderFileList();
     setDirty(false);
     updateSaveStatus(`Saved ${formatTime()}`, "ok");
-    state.thumbnailCache.delete(file.relativePath);
+    state.thumbnailCache.delete(fileKey(file));
     rememberRecentFile(file);
     persistDraft();
-    appendConsole(`Saved ${file.relativePath}`);
+    appendConsole(`Saved ${fileDisplayPath(file)}`);
     showToast(`Saved ${file.name}`, "success");
     return true;
   }
@@ -2132,22 +2159,42 @@ async function saveAsFile() {
   }
 }
 
-function createNewFile() {
+async function createNewFile() {
   if (state.isDirty) {
     const shouldContinue = window.confirm("You have unsaved changes. Continue without saving?");
     if (!shouldContinue) return;
   }
 
-  state.activeFile = null;
-  els.currentFile.textContent = "New unsaved diagram";
-  updateExportPanel();
-  els.codeEditor.value = templates[state.mode];
-  setDirty(true);
-  updateBuilderFromEditor();
-  schedulePreview(100);
-  scheduleDraftSave();
-  renderFileList();
-  setSideView("builder");
+  const content = templates[state.mode];
+  const defaultName = state.mode === "PlantUML" ? "new-diagram.puml" : "new-diagram.mmd";
+
+  try {
+    const result = await api.workspace.saveFileAs({
+      kind: state.mode,
+      content,
+      defaultName
+    });
+    if (result?.canceled || !result?.file) return;
+
+    state.activeFile = result.file;
+    els.currentFile.textContent = fileDisplayPath(result.file);
+    updateExportPanel();
+    els.codeEditor.value = content;
+    setDirty(false);
+    updateSaveStatus(`Saved ${formatTime()}`, "ok");
+    rememberRecentFile(result.file);
+    persistDraft();
+    await loadFiles();
+    updateBuilderFromEditor();
+    schedulePreview(100);
+    renderFileList();
+    setSideView("builder");
+    showToast(`Created ${result.file.name}`, "success");
+  }
+  catch (error) {
+    appendConsole(`Create failed: ${error.message}`);
+    showToast(`Create failed: ${error.message}`, "error");
+  }
 }
 
 async function runTool(label, runner) {
@@ -2575,7 +2622,7 @@ function closeCommandPalette() {
 
 els.codeEditor.addEventListener("input", () => {
   setDirty(true);
-  if (state.activeFile) state.thumbnailCache.delete(state.activeFile.relativePath);
+  if (state.activeFile) state.thumbnailCache.delete(fileKey(state.activeFile));
   updateBuilderFromEditor();
   schedulePreview();
   scheduleDraftSave();
@@ -2783,7 +2830,7 @@ els.menuSaveAs.addEventListener("click", saveAsFile);
 els.menuExport.addEventListener("click", exportCurrentAs);
 els.menuExportAs.addEventListener("click", () => setSideView("export"));
 els.menuOpenOutput.addEventListener("click", api.tools.openOutput);
-els.menuRevealFile.addEventListener("click", () => api.workspace.revealFile(state.activeFile?.relativePath));
+els.menuRevealFile.addEventListener("click", () => api.workspace.revealFile(state.activeFile));
 els.menuUndo.addEventListener("click", undoVisualChange);
 els.menuRedo.addEventListener("click", redoVisualChange);
 els.menuDuplicate.addEventListener("click", duplicateSelection);
@@ -3052,7 +3099,7 @@ function restoreDraftIfWanted() {
   if (!shouldRestore) return false;
   state.activeFile = draft.activeFile || null;
   els.codeEditor.value = draft.source;
-  els.currentFile.textContent = draft.activeFile?.relativePath || "Recovered unsaved diagram";
+  els.currentFile.textContent = draft.activeFile ? fileDisplayPath(draft.activeFile) : "Recovered unsaved diagram";
   setMode(draft.mode || "Mermaid");
   setDirty(true);
   renderFileList();
@@ -3069,9 +3116,10 @@ function getLastWorkedFile() {
   catch {
     last = null;
   }
-  if (last?.relativePath) {
-    const existing = state.files.find((file) => file.relativePath === last.relativePath);
+  if (fileKey(last)) {
+    const existing = state.files.find((file) => fileKey(file) === fileKey(last));
     if (existing) return existing;
+    if (last.absolutePath) return last;
   }
 
   let recent = [];
@@ -3082,8 +3130,9 @@ function getLastWorkedFile() {
     recent = [];
   }
   for (const item of recent) {
-    const existing = state.files.find((file) => file.relativePath === item.relativePath);
+    const existing = state.files.find((file) => fileKey(file) === fileKey(item));
     if (existing) return existing;
+    if (item.absolutePath) return item;
   }
   return null;
 }

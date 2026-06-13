@@ -9,7 +9,8 @@ contextBridge.exposeInMainWorld("phytoStudio", {
   workspace: {
     listFiles: () => ipcRenderer.invoke("workspace:list-files"),
     readFile: (relativePath) => ipcRenderer.invoke("workspace:read-file", relativePath),
-    saveFile: (relativePath, content) => ipcRenderer.invoke("workspace:save-file", relativePath, content),
+    saveFile: (target, content) => ipcRenderer.invoke("workspace:save-file", target, content),
+    saveFileAs: (options) => ipcRenderer.invoke("workspace:save-file-as", options),
     saveNewFile: (kind, fileName, content, overwrite) => ipcRenderer.invoke("workspace:save-new-file", kind, fileName, content, overwrite),
     chooseFolder: () => ipcRenderer.invoke("workspace:choose-folder"),
     revealFile: (relativePath) => ipcRenderer.invoke("workspace:reveal-file", relativePath),

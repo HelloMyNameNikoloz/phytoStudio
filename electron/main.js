@@ -317,6 +317,47 @@ function safeProjectPath(relativePath) {
   return resolved;
 }
 
+function isInsideDirectory(parent, candidate) {
+  const relative = path.relative(parent, candidate);
+  return relative === "" || (!!relative && !relative.startsWith("..") && !path.isAbsolute(relative));
+}
+
+function resolveDiagramTarget(target) {
+  if (target && typeof target === "object") {
+    if (target.absolutePath) return path.resolve(target.absolutePath);
+    if (target.relativePath) return safeWorkspacePath(target.relativePath);
+  }
+
+  if (typeof target === "string" && path.isAbsolute(target)) {
+    return path.resolve(target);
+  }
+
+  return safeWorkspacePath(String(target || ""));
+}
+
+function kindFromPath(filePath, fallbackKind = "Mermaid") {
+  const extension = path.extname(filePath).toLowerCase();
+  if (extension === ".puml" || extension === ".plantuml") return "PlantUML";
+  if (extension === ".mmd" || extension === ".mermaid") return "Mermaid";
+  return fallbackKind === "PlantUML" ? "PlantUML" : "Mermaid";
+}
+
+function describeDiagramPath(absolutePath, fallbackKind = "Mermaid") {
+  const resolved = path.resolve(absolutePath);
+  const descriptor = {
+    name: path.basename(resolved),
+    kind: kindFromPath(resolved, fallbackKind),
+    absolutePath: resolved
+  };
+
+  if (isInsideDirectory(workspaceRoot, resolved)) {
+    descriptor.relativePath = path.relative(workspaceRoot, resolved).split(path.sep).join(path.posix.sep);
+    delete descriptor.absolutePath;
+  }
+
+  return descriptor;
+}
+
 async function ensureWorkspaceFolders() {
   await fs.mkdir(safeWorkspacePath(path.join("diagrams", "plantuml")), { recursive: true });
   await fs.mkdir(safeWorkspacePath(path.join("diagrams", "mermaid")), { recursive: true });
@@ -358,15 +399,44 @@ async function listDiagramFiles() {
 
 ipcMain.handle("workspace:list-files", listDiagramFiles);
 
-ipcMain.handle("workspace:read-file", async (_event, relativePath) => {
-  const absolutePath = safeWorkspacePath(relativePath);
+ipcMain.handle("workspace:read-file", async (_event, target) => {
+  const absolutePath = resolveDiagramTarget(target);
   return fs.readFile(absolutePath, "utf8");
 });
 
-ipcMain.handle("workspace:save-file", async (_event, relativePath, content) => {
-  const absolutePath = safeWorkspacePath(relativePath);
+ipcMain.handle("workspace:save-file", async (_event, target, content) => {
+  const absolutePath = resolveDiagramTarget(target);
   await fs.writeFile(absolutePath, content, "utf8");
   return { ok: true };
+});
+
+ipcMain.handle("workspace:save-file-as", async (_event, options) => {
+  const kind = options?.kind === "PlantUML" ? "PlantUML" : "Mermaid";
+  const extension = kind === "PlantUML" ? "puml" : "mmd";
+  const defaultName = String(options?.defaultName || `new-diagram.${extension}`).replace(/[<>:"/\\|?*]/g, "-");
+  const defaultPath = path.join(workspaceRoot, "diagrams", kind === "PlantUML" ? "plantuml" : "mermaid", defaultName);
+
+  const result = await dialog.showSaveDialog(getFocusedWindow(), {
+    title: `Save ${kind} diagram`,
+    defaultPath,
+    filters: [
+      { name: `${kind} diagram`, extensions: [extension] },
+      { name: "All files", extensions: ["*"] }
+    ]
+  });
+
+  if (result.canceled || !result.filePath) {
+    return { ok: false, canceled: true };
+  }
+
+  let targetPath = result.filePath;
+  if (!path.extname(targetPath)) {
+    targetPath = `${targetPath}.${extension}`;
+  }
+
+  await fs.mkdir(path.dirname(targetPath), { recursive: true });
+  await fs.writeFile(targetPath, options?.content || "", "utf8");
+  return { ok: true, file: describeDiagramPath(targetPath, kind) };
 });
 
 ipcMain.handle("workspace:save-new-file", async (_event, kind, fileName, content, overwrite) => {
@@ -406,7 +476,7 @@ ipcMain.handle("workspace:reveal-file", async (_event, relativePath) => {
     await shell.openPath(workspaceRoot);
     return;
   }
-  shell.showItemInFolder(safeWorkspacePath(relativePath));
+  shell.showItemInFolder(resolveDiagramTarget(relativePath));
 });
 
 function describeDiagramFile(relativePath) {
