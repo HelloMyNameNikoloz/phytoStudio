@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phyto Studio</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="titlebar">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>
+            <h1>Phyto Studio</h1>
+            <p>Local PlantUML and Mermaid builder</p>
+          </div>
+        </div>
+
+        <nav class="app-menu" aria-label="Application menu">
+          <div class="menu-group">
+            <button class="menu-button" type="button" data-menu="fileMenu">File</button>
+            <div class="menu-popover" id="fileMenu">
+              <button type="button" id="menuNewFile">New Diagram</button>
+              <button type="button" id="menuOpenWorkspace">Open Workspace...</button>
+              <button type="button" id="menuSaveFile">Save</button>
+              <button type="button" id="menuSaveAs">Save As...</button>
+              <span></span>
+              <button type="button" id="menuExport">Export</button>
+              <button type="button" id="menuExportAs">Export As...</button>
+              <button type="button" id="menuOpenOutput">Open Output Folder</button>
+              <button type="button" id="menuRevealFile">Reveal Active File</button>
+            </div>
+          </div>
+          <div class="menu-group">
+            <button class="menu-button" type="button" data-menu="editMenu">Edit</button>
+            <div class="menu-popover" id="editMenu">
+              <button type="button" id="menuUndo">Undo</button>
+              <button type="button" id="menuRedo">Redo</button>
+              <span></span>
+              <button type="button" id="menuDuplicate">Duplicate Selection</button>
+              <button type="button" id="menuDelete">Delete Selection</button>
+              <button type="button" id="menuCommandPalette">Command Palette...</button>
+            </div>
+          </div>
+          <div class="menu-group">
+            <button class="menu-button" type="button" data-menu="viewMenu">View</button>
+            <div class="menu-popover" id="viewMenu">
+              <button type="button" id="menuBuilder">Builder</button>
+              <button type="button" id="menuFiles">Files</button>
+              <button type="button" id="menuPreview">Live Preview</button>
+              <button type="button" id="menuProperties">Properties</button>
+              <button type="button" id="menuConsole">Console</button>
+              <span></span>
+              <button type="button" id="menuFitCanvas">Fit Canvas</button>
+              <button type="button" id="menuZoomResetCanvas">Reset Canvas Zoom</button>
+            </div>
+          </div>
+          <div class="menu-group">
+            <button class="menu-button" type="button" data-menu="diagramMenu">Diagram</button>
+            <div class="menu-popover" id="diagramMenu">
+              <button type="button" id="menuAddClass">Add Class / Node</button>
+              <button type="button" id="menuAddRelationship">Add Relationship</button>
+              <button type="button" id="menuOrganize">Organize From Export</button>
+              <button type="button" id="menuValidate">Validate Preview</button>
+              <button type="button" id="menuAutoLayout">Auto Layout</button>
+            </div>
+          </div>
+          <button class="menu-button" type="button" id="menuSettings">Settings</button>
+        </nav>
+
+        <div class="titlebar-status" id="saveStatus">Autosave on</div>
+
+        <div class="window-actions">
+          <button class="icon-button" id="minimizeWindow" title="Minimize" aria-label="Minimize">
+            <span></span>
+          </button>
+          <button class="icon-button" id="maximizeWindow" title="Maximize" aria-label="Maximize">
+            <span></span>
+          </button>
+          <button class="icon-button close" id="closeWindow" title="Close" aria-label="Close">
+            <span></span>
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace" id="workspace">
+        <aside class="activity-bar" aria-label="Workspace sections">
+          <button class="activity-button" id="activityBuilder" type="button" title="Toggle sidebar (focus canvas)">Build</button>
+          <button class="activity-button" id="activityFiles" type="button" title="Files" data-reveal="files">Files</button>
+          <button class="activity-button" id="activityPreview" type="button" title="Live Preview" data-reveal="preview">Preview</button>
+          <button class="activity-button" id="activityExport" type="button" title="Export" data-reveal="export">Export</button>
+          <button class="activity-button" id="activityConsole" type="button" title="Console" data-reveal="console">
+            Console
+            <span class="activity-badge" id="activityConsoleBadge" hidden></span>
+          </button>
+        </aside>
+
+        <button class="side-overlay-backdrop" id="sideOverlayBackdrop" type="button" aria-label="Close panel"></button>
+        <aside class="side-panel" id="sidePanel" aria-label="Inspector">
+          <div class="console-resize-handle" id="consoleResizeHandle" role="separator" aria-orientation="horizontal" aria-label="Resize console"></div>
+          <button class="side-panel-close" id="sidePanelClose" type="button" title="Close panel" aria-label="Close panel">
+            <span></span>
+            <span></span>
+          </button>
+          <section class="side-section" id="section-files" data-section="files">
+            <div class="side-section-header">
+              <button class="side-section-toggle" type="button" data-toggle="files" aria-expanded="true">
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="side-section-title">Files</span>
+              </button>
+              <div class="side-section-actions">
+                <button class="ghost-button" id="refreshFiles" type="button">Refresh</button>
+              </div>
+            </div>
+            <div class="side-section-body">
+              <div class="files-startbar">
+                <button class="files-new-button" id="newDiagramFromFiles" type="button">
+                  <span class="files-new-icon" aria-hidden="true">+</span>
+                  <span>
+                    <strong>New Diagram</strong>
+                    <small>Create Mermaid or PlantUML</small>
+                  </span>
+                </button>
+                <input class="side-search" id="fileSearch" type="text" placeholder="Search files..." autocomplete="off" spellcheck="false" />
+              </div>
+              <div class="file-recent" id="fileRecent" hidden>
+                <div class="file-group-label">Recent</div>
+                <div class="file-list" id="recentList"></div>
+              </div>
+              <div class="file-list" id="fileList"></div>
+            </div>
+          </section>
+
+          <section class="side-section" id="section-properties" data-section="properties">
+            <div class="side-section-header">
+              <button class="side-section-toggle" type="button" data-toggle="properties" aria-expanded="true">
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="side-section-title">Properties</span>
+              </button>
+            </div>
+            <div class="side-section-body">
+              <div class="properties-empty" id="propertiesEmpty">Select a class, node, or relationship.</div>
+
+              <form class="properties-form hidden" id="nodeProperties">
+                <label>
+                  Name
+                  <input id="propNodeName" type="text" autocomplete="off" spellcheck="false" />
+                </label>
+                <label>
+                  Attributes
+                  <textarea id="propNodeAttributes" rows="6" spellcheck="false"></textarea>
+                </label>
+                <label>
+                  Methods
+                  <textarea id="propNodeMethods" rows="6" spellcheck="false"></textarea>
+                </label>
+                <button class="tool-button primary" id="applyNodeProperties" type="button">Apply Class</button>
+              </form>
+
+              <form class="properties-form hidden" id="edgeProperties">
+                <label>
+                  Relationship
+                  <select id="propEdgeRelation">
+                    <option value="--">Association</option>
+                    <option value="-->">Directed association</option>
+                    <option value="<|--">Inheritance</option>
+                    <option value="*--">Composition</option>
+                    <option value="o--">Aggregation</option>
+                    <option value="..>">Dependency</option>
+                  </select>
+                </label>
+                <label>
+                  Source multiplicity
+                  <input id="propEdgeFromMultiplicity" type="text" placeholder="1" autocomplete="off" spellcheck="false" />
+                </label>
+                <label>
+                  Target multiplicity
+                  <input id="propEdgeToMultiplicity" type="text" placeholder="0..*" autocomplete="off" spellcheck="false" />
+                </label>
+                <label>
+                  Label
+                  <input id="propEdgeLabel" type="text" placeholder="manages" autocomplete="off" spellcheck="false" />
+                </label>
+                <button class="tool-button primary" id="applyEdgeProperties" type="button">Apply Relationship</button>
+              </form>
+            </div>
+          </section>
+
+          <section class="side-section collapsed" id="section-preview" data-section="preview">
+            <div class="side-section-header">
+              <button class="side-section-toggle" type="button" data-toggle="preview" aria-expanded="false">
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="side-section-title">Live Preview</span>
+              </button>
+              <div class="side-section-actions">
+                <button class="ghost-button" id="refreshPreview" type="button">Render</button>
+              </div>
+            </div>
+            <div class="side-section-body">
+              <div class="preview-toolbar">
+                <button class="ghost-button" id="zoomOutPreview" type="button">-</button>
+                <button class="ghost-button" id="zoomResetPreview" type="button">100%</button>
+                <button class="ghost-button" id="zoomInPreview" type="button">+</button>
+              </div>
+              <p class="side-hint" id="previewStatus">Waiting for source</p>
+              <div class="preview-wrap compact">
+                <div class="preview-surface" id="previewSurface">
+                  <div class="preview-empty" id="previewEmpty">Preview appears after the local renderer finishes.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="side-section collapsed" id="section-export" data-section="export">
+            <div class="side-section-header">
+              <button class="side-section-toggle" type="button" data-toggle="export" aria-expanded="false">
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="side-section-title">Export</span>
+              </button>
+            </div>
+            <div class="side-section-body">
+              <div class="export-page">
+                <div class="export-hero">
+                  <div>
+                    <span class="export-eyebrow">Current document</span>
+                    <h3>Export the active diagram</h3>
+                    <p>Save the file you are editing now as a polished SVG, PNG, or PDF asset.</p>
+                  </div>
+                  <button class="export-primary-action" id="exportCurrentAs" type="button">
+                    <span class="export-action-icon" aria-hidden="true">OUT</span>
+                    <span>
+                      <strong>Export...</strong>
+                      <small>Choose where to save this diagram</small>
+                    </span>
+                  </button>
+                </div>
+
+                <form class="export-current-panel" id="exportOptions">
+                  <div class="export-setting-row">
+                    <label class="export-field">
+                      <span>Format</span>
+                      <select id="exportFormat">
+                        <option value="svg">SVG</option>
+                        <option value="png">PNG</option>
+                        <option value="pdf">PDF</option>
+                      </select>
+                    </label>
+                    <label class="export-field">
+                      <span>Background</span>
+                      <select id="exportBackground">
+                        <option value="transparent">Transparent</option>
+                        <option value="white">White</option>
+                      </select>
+                    </label>
+                  </div>
+
+                  <div class="export-summary">
+                    <div>
+                      <span class="export-summary-label">Source</span>
+                      <strong id="exportCurrentName">Current diagram</strong>
+                    </div>
+                    <p>Only the active file is exported. Other workspace diagrams are left untouched.</p>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
+
+          <section class="side-section collapsed" id="section-console" data-section="console">
+            <div class="side-section-header">
+              <button class="side-section-toggle" type="button" data-toggle="console" aria-expanded="false">
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="side-section-title">Console</span>
+                <span class="side-section-badge" id="consoleBadge" hidden></span>
+              </button>
+              <div class="side-section-actions">
+                <button class="ghost-button" id="clearConsole" type="button">Clear</button>
+              </div>
+            </div>
+            <div class="side-section-body">
+              <pre id="consoleOutput">Ready.</pre>
+            </div>
+          </section>
+        </aside>
+
+        <section class="stage">
+          <div class="toolbar">
+            <div class="segmented" role="tablist" aria-label="Diagram type">
+              <button id="modeMermaid" class="active" type="button">Mermaid</button>
+              <button id="modePlantUml" type="button">PlantUML</button>
+            </div>
+            <div class="toolbar-spacer"></div>
+            <button class="command-button" id="organizeDiagram"><span class="button-icon">↕</span><span>Organize</span></button>
+            <button class="command-button" id="fitCanvas"><span class="button-icon">□</span><span>Fit</span></button>
+            <span class="toolbar-separator" aria-hidden="true"></span>
+            <button class="command-button" id="addNode"><span class="button-icon">+</span><span>Add Class</span></button>
+            <button class="command-button" id="connectNodes"><span class="button-icon">⟶</span><span>Associate</span></button>
+            <button class="command-button danger" id="deleteNode" hidden>Delete</button>
+            <span class="toolbar-separator" aria-hidden="true"></span>
+            <button class="command-button" id="newFile"><span class="button-icon">◇</span><span>New</span></button>
+            <button class="command-button primary" id="saveFile"><span class="button-icon">✓</span><span>Save</span></button>
+          </div>
+
+          <div class="editor-grid" id="editorGrid">
+            <section class="panel builder-panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Visual Builder</h2>
+                  <p id="builderHint">Flowchart canvas syncs with Mermaid code.</p>
+                </div>
+              </div>
+              <div class="canvas-wrap">
+                <div class="organize-overlay hidden" id="organizeOverlay" aria-live="polite">
+                  <div class="organize-card">
+                    <div class="organize-spinner" aria-hidden="true"></div>
+                    <div>
+                      <strong>Organizing layout</strong>
+                      <span>Reading exported geometry and placing classes...</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="canvas-viewport" id="canvasViewport">
+                  <svg class="edge-layer" id="edgeLayer" aria-hidden="true"></svg>
+                  <div class="canvas" id="canvas" aria-label="Visual diagram builder"></div>
+                </div>
+                <div class="canvas-controls" aria-label="Canvas controls">
+                  <button class="ghost-button" id="zoomOutCanvas" type="button">-</button>
+                  <button class="ghost-button" id="zoomResetCanvas" type="button">100%</button>
+                  <button class="ghost-button" id="zoomInCanvas" type="button">+</button>
+                </div>
+                <div class="minimap" id="minimap" aria-hidden="true"></div>
+                <div class="empty-builder" id="emptyBuilder">
+                  Visual builder is optimized for Mermaid flowcharts. Open or create a flowchart to edit nodes directly.
+                </div>
+              </div>
+            </section>
+
+            <div class="editor-resize-handle" id="editorResizeHandle" role="separator" aria-orientation="vertical" aria-label="Resize editor split"></div>
+
+            <section class="panel code-panel">
+              <div class="panel-header">
+                <div>
+                  <h2>Code</h2>
+                  <p id="currentFile">No file selected</p>
+                </div>
+                <div class="status-pill" id="syncStatus">Synced</div>
+              </div>
+              <textarea id="codeEditor" spellcheck="false" aria-label="Diagram source editor"></textarea>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="context-menu hidden" id="contextMenu" role="menu"></div>
+
+    <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
+
+    <div class="relationship-popover hidden" id="relationshipPopover" role="dialog" aria-label="Relationship editor">
+      <div class="popover-title">Connection</div>
+      <div class="relation-buttons" id="relationButtons">
+        <button type="button" data-relation="--" title="Association">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="3" y1="8" x2="37" y2="8"/></svg>
+          <span class="rel-caption">Assoc</span>
+        </button>
+        <button type="button" data-relation="-->" title="Directed association">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="3" y1="8" x2="34" y2="8"/><polyline points="27,3 36,8 27,13" fill="none"/></svg>
+          <span class="rel-caption">Directed</span>
+        </button>
+        <button type="button" data-relation="<|--" title="Inheritance">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="3" y1="8" x2="26" y2="8"/><polygon points="26,3 37,8 26,13" fill="none"/></svg>
+          <span class="rel-caption">Inherit</span>
+        </button>
+        <button type="button" data-relation="*--" title="Composition">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="15" y1="8" x2="37" y2="8"/><polygon points="3,8 9,4 15,8 9,12" fill="currentColor"/></svg>
+          <span class="rel-caption">Compose</span>
+        </button>
+        <button type="button" data-relation="o--" title="Aggregation">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="15" y1="8" x2="37" y2="8"/><polygon points="3,8 9,4 15,8 9,12" fill="none"/></svg>
+          <span class="rel-caption">Aggregate</span>
+        </button>
+        <button type="button" data-relation="..>" title="Dependency">
+          <svg class="rel-icon" viewBox="0 0 40 16" aria-hidden="true"><line x1="3" y1="8" x2="34" y2="8" stroke-dasharray="4 3"/><polyline points="27,3 36,8 27,13" fill="none"/></svg>
+          <span class="rel-caption">Depend</span>
+        </button>
+      </div>
+      <label>
+        Source multiplicity
+        <input id="popoverFromMultiplicity" type="text" placeholder="1" autocomplete="off" spellcheck="false" />
+      </label>
+      <label>
+        Target multiplicity
+        <input id="popoverToMultiplicity" type="text" placeholder="0..*" autocomplete="off" spellcheck="false" />
+      </label>
+      <label>
+        Label
+        <input id="popoverLabel" type="text" placeholder="manages" autocomplete="off" spellcheck="false" />
+      </label>
+      <div class="popover-actions">
+        <button type="button" id="popoverDeleteRelationship">Delete</button>
+        <button type="button" id="popoverCloseRelationship">Done</button>
+      </div>
+    </div>
+
+    <div class="modal-backdrop hidden" id="commandPalette">
+      <section class="command-palette" role="dialog" aria-label="Command palette">
+        <input id="commandSearch" type="text" placeholder="Type a command" />
+        <div class="command-list" id="commandList"></div>
+      </section>
+    </div>
+
+    <div class="modal-backdrop hidden" id="settingsModal">
+      <section class="preferences-modal" role="dialog" aria-label="Preferences">
+        <div class="preferences-header">
+          <div>
+            <span class="preferences-eyebrow">Preferences</span>
+            <h2>Studio settings</h2>
+            <p>Control saving, appearance, and editing behavior for this workspace.</p>
+          </div>
+          <button class="side-panel-close" id="settingsClose" type="button" title="Close preferences" aria-label="Close preferences">
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+        <div class="preferences-grid">
+          <label class="preference-card">
+            <span class="preference-icon">A</span>
+            <span>
+              <strong>Autosave edits</strong>
+              <small>Write the active saved file shortly after each edit.</small>
+            </span>
+            <input id="settingsAutosave" type="checkbox" />
+          </label>
+          <label class="preference-card wide">
+            <span class="preference-icon">T</span>
+            <span>
+              <strong>Color theme</strong>
+              <small>Choose one of five focused editor themes.</small>
+            </span>
+            <select id="settingsTheme">
+              <option value="aurora">Aurora Dark</option>
+              <option value="midnight">Midnight Graphite</option>
+              <option value="forest">Forest Dark</option>
+              <option value="daylight">Daylight</option>
+              <option value="paper">Paper Light</option>
+            </select>
+          </label>
+        </div>
+      </section>
+    </div>
+
+    <script src="./renderer.js"></script>
+  </body>
+</html>

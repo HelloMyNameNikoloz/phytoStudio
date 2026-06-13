@@ -1,0 +1,84 @@
+@startuml
+title Simple Shop System - Class Diagram
+
+left to right direction
+
+class User {
+  +id: int
+  +name: string
+  +email: string
+  +login()
+  +logout()
+}
+
+class Customer {
+  +shippingAddress: string
+  +addToCart()
+  +placeOrder()
+}
+
+class Admin {
+  +role: string
+  +createProduct()
+  +deleteProduct()
+}
+
+class Product {
+  +id: int
+  +name: string
+  +price: double
+  +stock: int
+}
+
+class Category {
+  +id: int
+  +name: string
+}
+
+class Cart {
+  +id: int
+  +createdAt: date
+  +clear()
+}
+
+class CartItem {
+  +quantity: int
+  +getSubtotal()
+}
+
+class Order {
+  +id: int
+  +orderDate: date
+  +status: string
+  +getTotal()
+}
+
+class OrderItem {
+  +quantity: int
+  +priceAtPurchase: double
+}
+
+class Payment {
+  +id: int
+  +amount: double
+  +status: string
+  +pay()
+}
+
+User <|-- Customer
+User <|-- Admin
+
+Category "1" -- "0..*" Product
+Customer "1" -- "1" Cart
+Cart "1" -- "0..*" CartItem
+CartItem "1" -- "1" Product
+
+Customer "1" -- "0..*" Order
+Order "1" -- "1..*" OrderItem
+OrderItem "1" -- "1" Product
+
+Order "1" -- "1" Payment
+
+Admin --> Product : manages
+
+@enduml

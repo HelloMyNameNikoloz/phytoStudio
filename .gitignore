@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+
+# Generated application builds
+dist/
+out/
+release/
+releases/
+*.asar
+*.blockmap
+*.exe
+*.msi
+*.dmg
+*.AppImage
+
+# Generated diagram exports and previews
+output/
+*.tmp.svg
+*.tmp.png
+*.tmp.pdf
+debug-*.png
+
+# Launcher/.NET build output
+build/launcher-src/
+build/launcher-publish/
+build/**/bin/
+build/**/obj/
+
+# Keep checked-in project assets.
+!build/icon.ico
+!build/icon.png
+
+# Logs and runtime state
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.pid
+*.seed
+
+# Environment/local configuration
+.env
+.env.*
+!.env.example
+*.local
+
+# Editor/OS files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Caches
+.cache/
+.eslintcache
+.parcel-cache/
+.vite/
+coverage/
+
+# Important: source diagrams are part of the project.
+!diagrams/
+!diagrams/**/*.mmd
+!diagrams/**/*.puml

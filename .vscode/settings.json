@@ -1,0 +1,20 @@
+{
+  "files.associations": {
+    "*.puml": "plantuml",
+    "*.plantuml": "plantuml",
+    "*.mmd": "markdown"
+  },
+  "plantuml.jar": "${workspaceFolder}/tools/plantuml.jar",
+  "plantuml.render": "Local",
+  "plantuml.exportFormat": "svg",
+  "plantuml.exportOutDir": "${workspaceFolder}/output/plantuml",
+  "plantuml.previewAutoUpdate": true,
+  "plantuml.diagramsRoot": "${workspaceFolder}/diagrams/plantuml",
+  "markdown.preview.backgroundColor": "#07070c",
+  "editor.fontFamily": "Cascadia Code, Consolas, monospace",
+  "editor.fontLigatures": true,
+  "editor.renderWhitespace": "boundary",
+  "editor.tabSize": 4,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true
+}

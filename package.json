@@ -1,0 +1,54 @@
+{
+  "name": "phyto_studio",
+  "version": "1.0.0",
+  "description": "A local desktop diagram-as-code workspace for PlantUML and Mermaid.",
+  "main": "electron/main.js",
+  "author": "Phyto Studio",
+  "license": "MIT",
+  "scripts": {
+    "start": "set ELECTRON_RUN_AS_NODE=& electron .",
+    "check-tools": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\check-tools.ps1",
+    "render:plantuml": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\render-plantuml.ps1",
+    "render:mermaid": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\render-mermaid.ps1",
+    "render:all": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\render-all.ps1",
+    "build:win": "electron-builder --win nsis && powershell -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\build-launcher.ps1",
+    "dist": "npm run build:win"
+  },
+  "build": {
+    "appId": "com.local.phytostudio",
+    "productName": "Phyto Studio",
+    "directories": {
+      "output": "dist"
+    },
+    "asar": false,
+    "files": [
+      "app/**/*",
+      "config/**/*",
+      "electron/**/*",
+      "diagrams/**/*",
+      "scripts/**/*",
+      "tools/**/*",
+      "README.md",
+      "package.json"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "dependencies": {
+    "@mermaid-js/mermaid-cli": "^11.15.0"
+  },
+  "devDependencies": {
+    "electron": "^39.8.5",
+    "electron-builder": "latest"
+  }
+}

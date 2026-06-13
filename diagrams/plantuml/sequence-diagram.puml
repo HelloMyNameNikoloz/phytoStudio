@@ -1,0 +1,21 @@
+@startuml
+title Place Order Sequence
+
+actor User
+participant Frontend
+participant Backend
+database Database
+participant PaymentProvider
+
+User -> Frontend: Click checkout
+Frontend -> Backend: POST /orders
+Backend -> Database: Validate cart and product stock
+Database --> Backend: Cart and stock details
+Backend -> PaymentProvider: Authorize payment
+PaymentProvider --> Backend: Payment approved
+Backend -> Database: Create order and update stock
+Database --> Backend: Order saved
+Backend --> Frontend: Order confirmation
+Frontend --> User: Show success message
+
+@enduml

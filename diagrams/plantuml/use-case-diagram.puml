@@ -1,0 +1,32 @@
+@startuml
+title E-Commerce Use Case Diagram
+
+left to right direction
+
+actor Customer
+actor Admin
+actor "Payment Provider" as PaymentProvider
+
+rectangle "E-Commerce System" {
+  usecase "Register" as UC_Register
+  usecase "Login" as UC_Login
+  usecase "Browse Products" as UC_Browse
+  usecase "Add To Cart" as UC_AddToCart
+  usecase "Checkout" as UC_Checkout
+  usecase "Manage Products" as UC_ManageProducts
+  usecase "Process Payment" as UC_ProcessPayment
+}
+
+Customer --> UC_Register
+Customer --> UC_Login
+Customer --> UC_Browse
+Customer --> UC_AddToCart
+Customer --> UC_Checkout
+
+Admin --> UC_Login
+Admin --> UC_ManageProducts
+
+UC_Checkout --> UC_ProcessPayment : includes
+PaymentProvider --> UC_ProcessPayment
+
+@enduml
