@@ -1,0 +1,57 @@
+@startuml
+title Simple Shop System - Entity Relationship Diagram
+
+entity Customer {
+  *customer_id : int <<PK>>
+  --
+  *name : varchar
+  *email : varchar
+  phone : varchar
+}
+
+entity Category {
+  *category_id : int <<PK>>
+  --
+  *name : varchar
+}
+
+entity Product {
+  *product_id : int <<PK>>
+  --
+  *name : varchar
+  *price : decimal
+  stock : int
+  category_id : int <<FK>>
+}
+
+entity Orders {
+  *order_id : int <<PK>>
+  --
+  *customer_id : int <<FK>>
+  *order_date : date
+  status : varchar
+}
+
+entity OrderItem {
+  *order_item_id : int <<PK>>
+  --
+  *order_id : int <<FK>>
+  *product_id : int <<FK>>
+  quantity : int
+  price : decimal
+}
+
+entity Payment {
+  *payment_id : int <<PK>>
+  --
+  *order_id : int <<FK>>
+  amount : decimal
+  status : varchar
+}
+
+Category ||--o{ Product
+Customer ||--o{ Orders
+Orders ||--|{ OrderItem
+Product ||--o{ OrderItem
+Orders ||--|| Payment
+@enduml

@@ -1,0 +1,36 @@
+@startuml
+title Simple Shop System - Deployment Diagram
+
+node "Customer Device" {
+  artifact "Browser SPA" as spa
+}
+
+cloud "CDN" as cdn
+
+node "Web Server (nginx)" as websrv {
+  artifact "Static Assets" as assets
+}
+
+node "App Cluster (Kubernetes)" {
+  node "API Pod" {
+    artifact "api.jar" as apijar
+  }
+  node "Worker Pod" {
+    artifact "worker.jar" as workerjar
+  }
+}
+
+database "PostgreSQL Primary" as db
+database "PostgreSQL Replica" as dbr
+node "Redis Cache" as redis
+cloud "Payment Provider" as pp
+
+spa --> cdn : HTTPS
+cdn --> websrv
+websrv --> apijar : reverse proxy
+apijar --> db : JDBC
+db --> dbr : replication
+apijar --> redis : cache
+workerjar --> db
+apijar --> pp : HTTPS
+@enduml

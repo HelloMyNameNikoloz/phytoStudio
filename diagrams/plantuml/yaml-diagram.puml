@@ -1,0 +1,22 @@
+@startyaml
+order:
+  id: 7007
+  status: PAID
+  customer:
+    id: 101
+    name: Alice Johnson
+  items:
+    - product: Laptop 14
+      qty: 1
+      price: 1299.00
+    - product: Wireless Mouse
+      qty: 2
+      price: 29.50
+  payment:
+    method: card
+    amount: 1358.00
+    status: AUTHORIZED
+  shipping:
+    carrier: FastShip
+    eta_days: 3
+@endyaml

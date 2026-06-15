@@ -105,6 +105,27 @@
             <button class="command-button" id="organizeDiagram"><span class="button-icon">↕</span><span>Organize</span></button>
             <button class="command-button" id="fitCanvas"><span class="button-icon">□</span><span>Fit</span></button>
             <span class="toolbar-separator" aria-hidden="true"></span>
+            <div class="render-options" id="renderOptions" hidden>
+              <label class="toolbar-field">
+                <span>Layout</span>
+                <select id="optOrientation">
+                  <option value="tb">Top → Bottom</option>
+                  <option value="lr">Left → Right</option>
+                </select>
+              </label>
+              <label class="toolbar-field">
+                <span>Lines</span>
+                <select id="optLineType">
+                  <option value="default">Default</option>
+                  <option value="polyline">Polyline</option>
+                  <option value="ortho">Orthogonal</option>
+                  <option value="splines">Curved</option>
+                </select>
+              </label>
+              <button class="command-button toggle active" id="optClassCircle" type="button" aria-pressed="true" title="Show the (C) class icon">(C)</button>
+              <button class="command-button toggle active" id="optAttrIcons" type="button" aria-pressed="true" title="Show member visibility icons">Members</button>
+            </div>
+            <span class="toolbar-separator" aria-hidden="true"></span>
             <button class="command-button" id="addNode"><span class="button-icon">+</span><span>Add Class</span></button>
             <button class="command-button" id="connectNodes"><span class="button-icon">⟶</span><span>Associate</span></button>
             <button class="command-button danger" id="deleteNode" hidden>Delete</button>
@@ -134,6 +155,7 @@
                 <div class="canvas-viewport" id="canvasViewport">
                   <svg class="edge-layer" id="edgeLayer" aria-hidden="true"></svg>
                   <div class="canvas" id="canvas" aria-label="Visual diagram builder"></div>
+                  <div class="builder-preview hidden" id="builderPreview" aria-label="Rendered diagram preview"></div>
                 </div>
                 <div class="canvas-controls" aria-label="Canvas controls">
                   <button class="ghost-button" id="zoomOutCanvas" type="button">-</button>

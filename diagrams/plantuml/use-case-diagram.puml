@@ -1,32 +1,52 @@
 @startuml
-title E-Commerce Use Case Diagram
+title Simple Shop System - Use Case Diagram
 
 left to right direction
 
+actor "Guest" as Guest
 actor Customer
 actor Admin
 actor "Payment Provider" as PaymentProvider
+actor "Shipping Carrier" as Carrier
+
+Guest <|-- Customer
 
 rectangle "E-Commerce System" {
   usecase "Register" as UC_Register
   usecase "Login" as UC_Login
   usecase "Browse Products" as UC_Browse
+  usecase "Search Catalog" as UC_Search
   usecase "Add To Cart" as UC_AddToCart
+  usecase "Manage Cart" as UC_ManageCart
   usecase "Checkout" as UC_Checkout
-  usecase "Manage Products" as UC_ManageProducts
   usecase "Process Payment" as UC_ProcessPayment
+  usecase "Track Order" as UC_Track
+  usecase "Write Review" as UC_Review
+  usecase "Manage Products" as UC_ManageProducts
+  usecase "Manage Inventory" as UC_Inventory
+  usecase "View Reports" as UC_Reports
+  usecase "Arrange Shipment" as UC_Ship
 }
 
-Customer --> UC_Register
+Guest --> UC_Browse
+Guest --> UC_Search
+Guest --> UC_Register
+
 Customer --> UC_Login
-Customer --> UC_Browse
 Customer --> UC_AddToCart
+Customer --> UC_ManageCart
 Customer --> UC_Checkout
+Customer --> UC_Track
+Customer --> UC_Review
 
 Admin --> UC_Login
 Admin --> UC_ManageProducts
+Admin --> UC_Inventory
+Admin --> UC_Reports
 
-UC_Checkout --> UC_ProcessPayment : includes
+UC_Checkout ..> UC_ProcessPayment : <<include>>
+UC_AddToCart ..> UC_ManageCart : <<extend>>
+UC_Checkout ..> UC_Ship : <<include>>
 PaymentProvider --> UC_ProcessPayment
-
+Carrier --> UC_Ship
 @enduml

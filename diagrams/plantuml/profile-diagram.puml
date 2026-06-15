@@ -1,0 +1,23 @@
+@startuml
+title Simple Shop System - Profile Diagram
+
+class Class <<metaclass>>
+class Component <<metaclass>>
+class Property <<metaclass>>
+
+class Entity <<stereotype>>
+class Service <<stereotype>>
+class Repository <<stereotype>>
+class Aggregate <<stereotype>>
+class Persistent <<stereotype>>
+
+Entity ..|> Class
+Aggregate ..|> Class
+Service ..|> Class
+Repository ..|> Component
+Persistent ..|> Property
+
+note top of Entity : {hasIdentity = true}
+note top of Service : {stateless = true}
+note right of Persistent : tag: column, nullable
+@enduml

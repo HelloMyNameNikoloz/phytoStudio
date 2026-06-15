@@ -1,0 +1,19 @@
+@startuml
+title Simple Shop System - Communication Diagram
+
+object ":Customer" as cust
+object ":CheckoutController" as ctrl
+object ":CartService" as cart
+object ":InventoryService" as inv
+object ":OrderService" as order
+object ":PaymentGateway" as pay
+
+cust --> ctrl : "1: checkout()"
+ctrl --> cart : "1.1: getCart()"
+ctrl --> inv : "1.2: reserve(items)"
+ctrl --> order : "1.3: createOrder()"
+order --> pay : "1.3.1: authorize(amount)"
+pay --> order : "1.3.2: approved"
+order --> ctrl : "1.4: confirmation"
+ctrl --> cust : "1.5: showSuccess()"
+@enduml

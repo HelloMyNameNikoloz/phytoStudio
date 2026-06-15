@@ -1,21 +1,51 @@
 @startuml
-title Place Order Sequence
+title Simple Shop System - Place Order Sequence
 
-actor User
-participant Frontend
-participant Backend
-database Database
-participant PaymentProvider
+actor Customer
+participant "Web App" as Web
+participant "API Gateway" as API
+participant "Cart Service" as Cart
+participant "Inventory Service" as Inv
+participant "Order Service" as Order
+participant "Payment Service" as Pay
+database "Database" as DB
+participant "Email Service" as Mail
 
-User -> Frontend: Click checkout
-Frontend -> Backend: POST /orders
-Backend -> Database: Validate cart and product stock
-Database --> Backend: Cart and stock details
-Backend -> PaymentProvider: Authorize payment
-PaymentProvider --> Backend: Payment approved
-Backend -> Database: Create order and update stock
-Database --> Backend: Order saved
-Backend --> Frontend: Order confirmation
-Frontend --> User: Show success message
-
+Customer -> Web : Click "Place Order"
+activate Web
+Web -> API : POST /orders
+activate API
+API -> Cart : getCart(customerId)
+activate Cart
+Cart --> API : cart + items
+deactivate Cart
+API -> Inv : reserve(items)
+activate Inv
+alt all items in stock
+  Inv --> API : reserved
+  deactivate Inv
+  API -> Order : createOrder(cart)
+  activate Order
+  Order -> DB : INSERT order
+  activate DB
+  DB --> Order : orderId
+  deactivate DB
+  Order -> Pay : authorize(amount)
+  activate Pay
+  Pay -> Pay : call provider
+  Pay --> Order : approved
+  deactivate Pay
+  Order -> DB : UPDATE order = PAID
+  Order --> API : confirmation
+  deactivate Order
+  API -> Mail : sendConfirmation(order)
+  API --> Web : 201 Created
+  Web --> Customer : Show success
+else out of stock
+  Inv --> API : insufficient stock
+  API --> Web : 409 Conflict
+  Web --> Customer : Show error message
+end
+deactivate API
+deactivate Web
 @enduml

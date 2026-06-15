@@ -177,4 +177,9 @@ els.modePlantUml.addEventListener("click", () => {
   }
 });
 
+els.optOrientation?.addEventListener("change", () => setRenderOption("orientation", els.optOrientation.value));
+els.optLineType?.addEventListener("change", () => setRenderOption("lineType", els.optLineType.value));
+els.optClassCircle?.addEventListener("click", () => setRenderOption("classCircle", !state.renderOptions.classCircle));
+els.optAttrIcons?.addEventListener("click", () => setRenderOption("attrIcons", !state.renderOptions.attrIcons));
+
 els.newFile.addEventListener("click", createNewFile);

@@ -1,0 +1,25 @@
+@startmindmap
+title Simple Shop System - Feature Mindmap
+
+* Online Shop
+** Catalog
+*** Products
+*** Categories
+*** Search
+** Cart
+*** Add / Remove
+*** Quantity
+*** Save for later
+** Checkout
+*** Shipping
+*** Payment
+*** Confirmation
+** Account
+*** Profile
+*** Orders
+*** Wishlist
+** Admin
+*** Inventory
+*** Reports
+*** Promotions
+@endmindmap

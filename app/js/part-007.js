@@ -135,7 +135,6 @@ function parseSourceMap(source) {
 
 function parsePlantUmlClassDiagram(source) {
   const titleMatch = source.match(/^\s*title\s+(.+)$/im);
-  const directionMatch = source.match(/^\s*(left to right direction|top to bottom direction)$/im);
   const nodes = new Map();
   const edges = [];
   let classIndex = 0;

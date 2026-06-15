@@ -1,0 +1,24 @@
+@startgantt
+title Simple Shop System - Release Plan
+
+Project starts 2026-06-01
+saturday are closed
+sunday are closed
+
+[Requirements] lasts 5 days
+[Design] lasts 6 days
+[Design] starts at [Requirements]'s end
+[Backend] lasts 12 days
+[Backend] starts at [Design]'s end
+[Frontend] lasts 10 days
+[Frontend] starts at [Design]'s end
+[Integration] lasts 5 days
+[Integration] starts at [Backend]'s end
+[Testing] lasts 6 days
+[Testing] starts at [Integration]'s end
+[Launch] happens at [Testing]'s end
+
+[Backend] is colored in LightBlue
+[Frontend] is colored in LightGreen
+[Testing] is colored in Moccasin
+@endgantt

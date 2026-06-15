@@ -1,0 +1,29 @@
+@startuml
+title Simple Shop System - Interaction Overview Diagram
+
+start
+partition "ref: Authenticate Customer" {
+  :sd Authenticate;
+}
+if (Authenticated?) then (yes)
+  partition "ref: Browse & Update Cart" {
+    :sd UpdateCart;
+  }
+  partition "ref: Checkout & Pay" {
+    :sd PlaceOrder;
+  }
+  if (Payment approved?) then (yes)
+    partition "ref: Fulfill Order" {
+      :sd FulfillOrder;
+    }
+    :Order complete;
+    stop
+  else (no)
+    :Cancel order;
+    stop
+  endif
+else (no)
+  :Deny access;
+  stop
+endif
+@enduml

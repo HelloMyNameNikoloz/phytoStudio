@@ -1,0 +1,22 @@
+@startsalt
+{+
+  Checkout
+  ==
+  {
+    Shipping address | "12 Garden Street     "
+    City             | "Springfield          "
+    Country          | ^United States^
+  }
+  --
+  Payment
+  {
+    Card number | "**** **** **** 4242 "
+    Expiry      | "12/28" | CVC | "***"
+  }
+  --
+  [ ] Save payment method
+  [X] I agree to the terms
+  ==
+  [  Cancel  ] | [  Pay $1358.00  ]
+}
+@endsalt

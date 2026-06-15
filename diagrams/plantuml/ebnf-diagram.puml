@@ -1,0 +1,11 @@
+@startebnf
+order = "ORDER", order_id, customer, line_item, { line_item }, payment ;
+order_id = digit, { digit } ;
+customer = "CUST", identifier ;
+line_item = product_id, quantity, price ;
+product_id = letter, { letter | digit } ;
+quantity = digit, { digit } ;
+price = digit, { digit }, [ ".", digit, digit ] ;
+payment = "PAY", ( "CARD" | "PAYPAL" | "BANK" ), price ;
+identifier = letter, { letter | digit } ;
+@endebnf

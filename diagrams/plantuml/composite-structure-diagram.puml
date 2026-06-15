@@ -1,0 +1,27 @@
+@startuml
+title Simple Shop System - Composite Structure Diagram
+
+component "Order Service" {
+  portin " " as pin
+  portout " " as pout
+
+  [Order Validator] as val
+  [Pricing Engine] as price
+  [Inventory Checker] as inv
+  [Order Repository] as repo
+
+  pin --> val
+  val --> price
+  price --> inv
+  inv --> repo
+  repo --> pout
+}
+
+interface "ICheckout" as ic
+interface "IPayment" as ip
+interface "IPersistence" as idb
+
+ic -- pin
+pout -- ip
+repo --> idb
+@enduml

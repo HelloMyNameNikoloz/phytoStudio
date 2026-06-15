@@ -1,0 +1,57 @@
+@startuml
+title Simple Shop System - Object Diagram
+
+object "alice : Customer" as alice {
+  id = 101
+  name = "Alice Johnson"
+  email = "alice@example.com"
+  shippingAddress = "12 Garden Street"
+}
+
+object "aliceCart : Cart" as cart {
+  id = 5001
+  createdAt = 2026-06-15
+}
+
+object "item1 : CartItem" as item1 {
+  quantity = 1
+}
+
+object "item2 : CartItem" as item2 {
+  quantity = 2
+}
+
+object "laptop : Product" as laptop {
+  id = 9
+  name = "Laptop 14"
+  price = 1299.00
+  stock = 8
+}
+
+object "mouse : Product" as mouse {
+  id = 14
+  name = "Wireless Mouse"
+  price = 29.50
+  stock = 120
+}
+
+object "order7 : Order" as order {
+  id = 7007
+  orderDate = 2026-06-15
+  status = "PAID"
+}
+
+object "pay : Payment" as pay {
+  id = 3003
+  amount = 1358.00
+  status = "AUTHORIZED"
+}
+
+alice --> cart
+cart --> item1
+cart --> item2
+item1 --> laptop
+item2 --> mouse
+alice --> order
+order --> pay
+@enduml

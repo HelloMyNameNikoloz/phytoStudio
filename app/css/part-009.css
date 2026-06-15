@@ -4,6 +4,41 @@
   display: none;
 }
 
+.builder-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 28px;
+  background: rgba(7, 8, 14, 0.58);
+}
+
+.builder-preview.hidden {
+  display: none;
+}
+
+.builder-preview svg {
+  max-width: 100%;
+  max-height: 100%;
+  height: auto;
+}
+
+.builder-preview-status {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.builder-preview-status.error {
+  color: var(--danger);
+  white-space: pre-wrap;
+  max-width: 90%;
+}
+
 .context-menu {
   position: fixed;
   z-index: 80;

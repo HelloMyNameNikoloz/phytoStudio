@@ -1,0 +1,25 @@
+@startuml
+title Simple Shop System - Package Diagram
+
+package "com.shop.web" {
+}
+package "com.shop.api" {
+}
+package "com.shop.domain" {
+  package "domain.catalog" {}
+  package "domain.cart" {}
+  package "domain.order" {}
+  package "domain.payment" {}
+}
+package "com.shop.persistence" {}
+package "com.shop.common" {}
+
+"com.shop.web" ..> "com.shop.api"
+"com.shop.api" ..> "com.shop.domain"
+"domain.cart" ..> "domain.catalog"
+"domain.order" ..> "domain.cart"
+"domain.order" ..> "domain.payment"
+"com.shop.domain" ..> "com.shop.persistence"
+"com.shop.persistence" ..> "com.shop.common"
+"com.shop.domain" ..> "com.shop.common"
+@enduml

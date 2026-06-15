@@ -76,12 +76,48 @@ function setPreviewSvg(svg) {
   requestAnimationFrame(fitPreviewToViewport);
 }
 
+function setBuilderPreviewStatus(text, isError = false) {
+  if (!els.builderPreview) return;
+  const status = document.createElement("div");
+  status.className = `builder-preview-status${isError ? " error" : ""}`;
+  status.textContent = text;
+  els.builderPreview.innerHTML = "";
+  els.builderPreview.appendChild(status);
+}
+
+// Render any non-editable diagram (everything except class/flowchart) straight
+// onto the builder canvas as a fully rendered, locally-generated SVG so every
+// PlantUML/Mermaid diagram type is visualized in the builder, not just shown a
+// "not supported" message.
+function paintBuilderPreview(svg) {
+  if (!els.builderPreview) return;
+  els.builderPreview.innerHTML = svg;
+  const rendered = els.builderPreview.querySelector("svg");
+  if (!rendered) {
+    setBuilderPreviewStatus("Preview renderer returned no SVG.", true);
+    return;
+  }
+  const size = getSvgNaturalSize(rendered);
+  if (!rendered.getAttribute("viewBox") && size.width > 0 && size.height > 0) {
+    rendered.setAttribute("viewBox", `0 0 ${size.width} ${size.height}`);
+  }
+  rendered.removeAttribute("width");
+  rendered.removeAttribute("height");
+  rendered.style.maxWidth = "100%";
+  rendered.style.maxHeight = "100%";
+  rendered.style.width = "auto";
+  rendered.style.height = "auto";
+  rendered.style.display = "block";
+  rendered.setAttribute("preserveAspectRatio", "xMidYMid meet");
+}
+
 async function renderLivePreview() {
   const content = els.codeEditor.value.trim();
   if (!content) {
     els.previewSurface.innerHTML = "";
     els.previewSurface.appendChild(els.previewEmpty);
     setPreviewStatus("Waiting for source");
+    if (state.builderType === "preview") setBuilderPreviewStatus("Waiting for source");
     return;
   }
 
@@ -96,11 +132,13 @@ async function renderLivePreview() {
     els.previewSurface.innerHTML = "";
     els.previewSurface.appendChild(els.previewEmpty);
     setPreviewStatus(result.error || "Preview failed.", true);
+    if (state.builderType === "preview") setBuilderPreviewStatus(result.error || "Preview failed.", true);
     return;
   }
 
   setPreviewSvg(result.svg);
   els.previewStatus.textContent = "Rendered from local exporter";
+  if (state.builderType === "preview") paintBuilderPreview(result.svg);
 }
 
 function schedulePreview(delay = 500) {

@@ -1,0 +1,31 @@
+@startuml
+title Simple Shop System - Checkout Timing
+
+robust "Customer" as C
+robust "Web App" as W
+concise "Order Service" as O
+concise "Payment" as P
+
+@0
+C is Browsing
+W is Idle
+O is Idle
+P is Idle
+
+@100
+C is Checkout
+W is Submitting
+
+@200
+O is Validating
+
+@300
+O is Authorizing
+P is Processing
+
+@400
+P is Approved
+O is Confirmed
+W is Success
+C is Done
+@enduml

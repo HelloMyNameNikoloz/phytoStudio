@@ -1,0 +1,12 @@
+@startditaa
++--------+     +---------+     +---------+
+| Client |---->|   API   |---->|  Order  |
+|  cBLU  |     | Gateway |     | Service |
++--------+     +---------+     +----+----+
+                                    |
+                                    v
+                               +----+-----+
+                               | Database |
+                               |   cGRE   |
+                               +----------+
+@endditaa

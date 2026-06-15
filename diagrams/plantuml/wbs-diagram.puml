@@ -1,0 +1,21 @@
+@startwbs
+title Simple Shop System - Work Breakdown Structure
+
+* Shop Platform
+** Frontend
+*** Storefront UI
+*** Cart UI
+*** Checkout UI
+** Backend
+*** Catalog API
+*** Order API
+*** Payment API
+** Data
+*** Schema
+*** Migrations
+*** Seed Data
+** Operations
+*** CI/CD Pipeline
+*** Monitoring
+*** Backups
+@endwbs

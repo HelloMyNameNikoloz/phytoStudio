@@ -170,6 +170,58 @@
   color: var(--text);
 }
 
+.render-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.render-options[hidden] {
+  display: none;
+}
+
+.toolbar-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.toolbar-field select {
+  min-height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(5, 6, 12, 0.72);
+  color: var(--text);
+  padding: 0 8px;
+  outline: 0;
+  cursor: pointer;
+}
+
+.toolbar-field select:focus {
+  border-color: rgba(76, 201, 240, 0.45);
+}
+
+.command-button.toggle {
+  min-height: 30px;
+  padding: 0 10px;
+  color: var(--muted);
+}
+
+.command-button.toggle.active {
+  border-color: rgba(76, 201, 240, 0.4);
+  background: rgba(76, 201, 240, 0.14);
+  color: var(--text);
+}
+
+.command-button.toggle.control-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .editor-grid {
   display: grid;
   grid-template-columns: minmax(360px, 80fr) 8px minmax(260px, 20fr);

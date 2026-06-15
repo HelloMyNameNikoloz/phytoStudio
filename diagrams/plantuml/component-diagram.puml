@@ -1,0 +1,36 @@
+@startuml
+title Simple Shop System - Component Diagram
+
+package "Storefront" {
+  [Web App] as web
+  [Mobile App] as mobile
+}
+
+package "Backend Services" {
+  [API Gateway] as gw
+  [Catalog Service] as catalog
+  [Cart Service] as cartsvc
+  [Order Service] as ordersvc
+  [Payment Service] as paysvc
+  [Notification Service] as notif
+}
+
+database "Product DB" as pdb
+database "Order DB" as odb
+queue "Event Bus" as bus
+cloud "Payment Provider" as pp
+
+web --> gw : HTTPS/REST
+mobile --> gw : HTTPS/REST
+gw --> catalog
+gw --> cartsvc
+gw --> ordersvc
+catalog --> pdb
+cartsvc --> odb
+ordersvc --> odb
+ordersvc --> paysvc
+paysvc --> pp : HTTPS
+ordersvc --> bus
+bus --> notif
+notif ..> web : push update
+@enduml

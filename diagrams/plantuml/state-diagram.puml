@@ -1,0 +1,24 @@
+@startuml
+title Simple Shop System - Order State Machine
+
+[*] --> Cart
+Cart --> Pending : checkout
+Pending --> Paid : payment approved
+Pending --> Cancelled : payment failed / timeout
+Paid --> Processing : start fulfillment
+
+state Processing {
+  [*] --> Picking
+  Picking --> Packing
+  Packing --> Ready
+  Ready --> [*]
+}
+
+Processing --> Shipped : dispatch
+Shipped --> Delivered : delivery confirmed
+Delivered --> [*]
+
+Paid --> Refunded : customer cancels
+Cancelled --> [*]
+Refunded --> [*]
+@enduml

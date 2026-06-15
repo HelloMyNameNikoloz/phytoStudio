@@ -103,7 +103,8 @@ function renderBuilder() {
   if (state.selectedEdgeIndex !== null && !state.graph.edges[state.selectedEdgeIndex]) {
     state.selectedEdgeIndex = null;
   }
-  const enabled = state.builderType !== "none" && state.graph.nodes.length > 0;
+  const isPreview = state.builderType === "preview";
+  const enabled = state.builderType !== "none" && !isPreview && state.graph.nodes.length > 0;
   const canEditStructure = state.builderType === "plantuml-class" || state.builderType === "mermaid-flowchart";
 
   if (state.builderType === "plantuml-class") {
@@ -117,10 +118,19 @@ function renderBuilder() {
     if (els.deleteNode) els.deleteNode.textContent = "Delete";
   }
 
-  els.emptyBuilder.classList.toggle("hidden", enabled);
+  els.emptyBuilder.classList.toggle("hidden", enabled || isPreview);
+  if (els.builderPreview) els.builderPreview.classList.toggle("hidden", !isPreview);
   els.addNode.disabled = state.isOrganizing || !enabled || !canEditStructure;
   els.connectNodes.disabled = state.isOrganizing || !enabled || !canEditStructure;
   if (els.deleteNode) els.deleteNode.disabled = state.isOrganizing || !enabled || !canEditStructure;
+
+  if (isPreview) {
+    els.edgeLayer.innerHTML = "";
+    els.canvas.innerHTML = "";
+    showProperties();
+    renderMinimap();
+    return;
+  }
 
   if (!enabled) {
     els.edgeLayer.innerHTML = "";
@@ -141,6 +151,7 @@ function renderBuilder() {
 }
 
 function updateBuilderFromEditor() {
+  syncRenderOptionsFromSource();
   if (state.mode === "Mermaid" && isFlowchartSource(els.codeEditor.value)) {
     state.builderType = "mermaid-flowchart";
     const previousPositions = new Map(state.graph.nodes.map((node) => [node.id, { x: node.x, y: node.y }]));

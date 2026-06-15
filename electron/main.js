@@ -179,13 +179,13 @@ app.whenReady().then(() => {
 
 async function runPreviewSelfTest() {
   try {
-    const plantUmlSource = await fs.readFile(safeWorkspacePath(path.join("diagrams", "plantuml", "class-diagram.puml")), "utf8");
-    const plantUmlSvg = await renderPlantUmlPreview(plantUmlSource);
-    writeLaunchLog(`Self-test PlantUML preview SVG length=${plantUmlSvg.length}`);
+    const classSource = await fs.readFile(safeWorkspacePath(path.join("diagrams", "plantuml", "class-diagram.puml")), "utf8");
+    const classSvg = await renderPlantUmlPreview(classSource);
+    writeLaunchLog(`Self-test PlantUML class-diagram preview SVG length=${classSvg.length}`);
 
-    const mermaidSource = await fs.readFile(safeWorkspacePath(path.join("diagrams", "mermaid", "flowchart.mmd")), "utf8");
-    const mermaidSvg = await renderMermaidPreview(mermaidSource);
-    writeLaunchLog(`Self-test Mermaid preview SVG length=${mermaidSvg.length}`);
+    const sequenceSource = await fs.readFile(safeWorkspacePath(path.join("diagrams", "plantuml", "sequence-diagram.puml")), "utf8");
+    const sequenceSvg = await renderPlantUmlPreview(sequenceSource);
+    writeLaunchLog(`Self-test PlantUML sequence-diagram preview SVG length=${sequenceSvg.length}`);
   }
   catch (error) {
     writeLaunchLog(`Self-test failed: ${error.stack || error.message}`);
@@ -629,6 +629,33 @@ function findMermaidCommand() {
   return { command: "mmdc", prefixArgs: [] };
 }
 
+let previewRenderCounter = 0;
+
+// Cap simultaneous PlantUML/Java renders. The sidebar requests a thumbnail for
+// every diagram at once; spawning dozens of JVMs together starves the machine
+// so renders miss the 30s timeout. A small pool keeps every render healthy.
+const PREVIEW_CONCURRENCY = 3;
+let activePreviewRenders = 0;
+const previewRenderQueue = [];
+
+function acquirePreviewSlot() {
+  if (activePreviewRenders < PREVIEW_CONCURRENCY) {
+    activePreviewRenders += 1;
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => previewRenderQueue.push(resolve));
+}
+
+function releasePreviewSlot() {
+  const next = previewRenderQueue.shift();
+  if (next) {
+    next();
+  }
+  else {
+    activePreviewRenders = Math.max(0, activePreviewRenders - 1);
+  }
+}
+
 async function renderPlantUmlPreview(content) {
   const plantUmlJar = safeProjectPath(path.join("tools", "plantuml.jar"));
   if (!fsSync.existsSync(plantUmlJar)) {
@@ -638,9 +665,12 @@ async function renderPlantUmlPreview(content) {
   const previewDir = path.join(app.getPath("userData"), "preview", "plantuml");
   await fs.mkdir(previewDir, { recursive: true });
 
-  const inputPath = path.join(previewDir, "preview.puml");
-  const outputPath = path.join(previewDir, "preview.svg");
-  await fs.writeFile(inputPath, content, "utf8");
+  // Use a unique basename per render. The live preview, the builder preview and
+  // every sidebar thumbnail can all render at once; a shared preview.puml/.svg
+  // pair would let concurrent renders overwrite each other and fail.
+  const token = `preview-${process.pid}-${Date.now()}-${(previewRenderCounter = (previewRenderCounter + 1) % 1e9)}`;
+  const inputPath = path.join(previewDir, `${token}.puml`);
+  const outputPath = path.join(previewDir, `${token}.svg`);
 
   const graphvizDot = "C:\\Program Files\\Graphviz\\bin\\dot.exe";
   const env = { ...process.env };
@@ -652,14 +682,21 @@ async function renderPlantUmlPreview(content) {
     env.Path = env.PATH;
   }
 
-  const javaCommand = findJavaCommand();
-  writeLaunchLog(`PlantUML preview using Java command: ${javaCommand}`);
-  const result = await runCommand(javaCommand, ["-jar", plantUmlJar, "-tsvg", "-o", previewDir, inputPath], { env });
-  if (result.code !== 0) {
-    throw new Error((result.stderr || result.stdout || "PlantUML preview failed.").trim());
+  await acquirePreviewSlot();
+  try {
+    await fs.writeFile(inputPath, content, "utf8");
+    const javaCommand = findJavaCommand();
+    const result = await runCommand(javaCommand, ["-jar", plantUmlJar, "-tsvg", "-o", previewDir, inputPath], { env, timeoutMs: 60000 });
+    if (result.code !== 0) {
+      throw new Error((result.stderr || result.stdout || "PlantUML preview failed.").trim());
+    }
+    return await fs.readFile(outputPath, "utf8");
   }
-
-  return fs.readFile(outputPath, "utf8");
+  finally {
+    releasePreviewSlot();
+    fs.rm(inputPath, { force: true }).catch(() => {});
+    fs.rm(outputPath, { force: true }).catch(() => {});
+  }
 }
 
 async function renderMermaidPreview(content) {

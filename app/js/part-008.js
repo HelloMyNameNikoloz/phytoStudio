@@ -16,23 +16,26 @@
     edges.push({ from, to, relation, label, fromMultiplicity, toMultiplicity });
   }
 
+  const renderOptions = readRenderOptionsFromSource(source);
   return {
     meta: {
       title: titleMatch ? titleMatch[1].trim() : "Class Diagram",
-      direction: directionMatch ? directionMatch[1].trim() : "left to right direction"
+      orientation: renderOptions.orientation,
+      lineType: renderOptions.lineType,
+      classCircle: renderOptions.classCircle,
+      attrIcons: renderOptions.attrIcons
     },
     graph: { nodes: [...nodes.values()], edges }
   };
 }
 
 function graphToPlantUml(graph, meta) {
-  const lines = [
-    "@startuml",
-    `title ${meta?.title || "Class Diagram"}`,
-    "",
-    meta?.direction || "left to right direction",
-    ""
-  ];
+  const lines = ["@startuml", `title ${meta?.title || "Class Diagram"}`, ""];
+  lines.push((meta?.orientation || "tb") === "lr" ? "left to right direction" : "top to bottom direction");
+  if (meta?.lineType && meta.lineType !== "default") lines.push(`skinparam linetype ${meta.lineType}`);
+  if (meta && meta.classCircle === false) lines.push("hide circle");
+  if (meta && meta.attrIcons === false) lines.push("skinparam classAttributeIconSize 0");
+  lines.push("");
 
   for (const node of graph.nodes) {
     lines.push(`class ${node.id} {`);
@@ -74,6 +77,105 @@ function updateEditorFromGraph() {
   setDirty(true);
   scheduleDraftSave();
   schedulePreview(300);
+}
+
+// ---- PlantUML render options (layout / line style / class & member icons) ----
+// These options live inside the diagram source so they sync in both directions:
+// the toolbar writes the directives into the code, and editing the code (or the
+// class builder round-trip) reflects back onto the toolbar. Every render path
+// (preview, organize, export, thumbnails) reads the source, so all stay in sync.
+
+function readRenderOptionsFromSource(source) {
+  const orientation = /^\s*left to right direction\s*$/im.test(source) ? "lr" : "tb";
+  let lineType = "default";
+  const lt = source.match(/^\s*skinparam\s+linetype\s+(\w+)\s*$/im);
+  if (lt) lineType = lt[1].toLowerCase();
+  return {
+    orientation,
+    lineType,
+    classCircle: !/^\s*hide\s+circle\s*$/im.test(source),
+    attrIcons: !/^\s*skinparam\s+classattributeiconsize\s+0\s*$/im.test(source)
+  };
+}
+
+function applyRenderOptionsToSource(source, opts) {
+  if (!/^\s*@startuml\b/im.test(source)) return source;
+  const isClass = /^\s*(abstract\s+)?class\s+[A-Za-z_]/im.test(source);
+
+  const cleaned = source.split(/\r?\n/).filter((line) => {
+    const t = line.trim().toLowerCase();
+    if (t === "left to right direction" || t === "top to bottom direction") return false;
+    if (/^skinparam\s+linetype\b/.test(t)) return false;
+    if (t === "hide circle") return false;
+    if (/^skinparam\s+classattributeiconsize\b/.test(t)) return false;
+    return true;
+  });
+
+  const directives = [];
+  directives.push(opts.orientation === "lr" ? "left to right direction" : "top to bottom direction");
+  if (opts.lineType && opts.lineType !== "default") directives.push(`skinparam linetype ${opts.lineType}`);
+  if (isClass && opts.classCircle === false) directives.push("hide circle");
+  if (isClass && opts.attrIcons === false) directives.push("skinparam classAttributeIconSize 0");
+
+  let insertAt = cleaned.findIndex((line) => /^\s*@startuml\b/i.test(line)) + 1;
+  if (/^\s*title\b/i.test(cleaned[insertAt] || "")) insertAt += 1;
+  cleaned.splice(insertAt, 0, ...directives);
+  return cleaned.join("\n");
+}
+
+function reflectRenderOptionControls() {
+  if (!els.optOrientation) return;
+  els.optOrientation.value = state.renderOptions.orientation;
+  els.optLineType.value = state.renderOptions.lineType;
+  els.optClassCircle.classList.toggle("active", state.renderOptions.classCircle);
+  els.optClassCircle.setAttribute("aria-pressed", String(state.renderOptions.classCircle));
+  els.optAttrIcons.classList.toggle("active", state.renderOptions.attrIcons);
+  els.optAttrIcons.setAttribute("aria-pressed", String(state.renderOptions.attrIcons));
+}
+
+function updateRenderOptionsAvailability() {
+  if (!els.renderOptions) return;
+  const isPuml = state.mode === "PlantUML" && /^\s*@startuml\b/im.test(els.codeEditor.value);
+  const isClass = isPuml && /^\s*(abstract\s+)?class\s+[A-Za-z_]/im.test(els.codeEditor.value);
+  els.renderOptions.hidden = !isPuml;
+  els.optClassCircle.disabled = !isClass;
+  els.optAttrIcons.disabled = !isClass;
+  els.optClassCircle.classList.toggle("control-disabled", !isClass);
+  els.optAttrIcons.classList.toggle("control-disabled", !isClass);
+}
+
+function syncRenderOptionsFromSource() {
+  if (state.mode === "PlantUML" && /^\s*@startuml\b/im.test(els.codeEditor.value)) {
+    state.renderOptions = readRenderOptionsFromSource(els.codeEditor.value);
+  }
+  reflectRenderOptionControls();
+  updateRenderOptionsAvailability();
+}
+
+function setRenderOption(key, value) {
+  state.renderOptions[key] = value;
+  reflectRenderOptionControls();
+  if (state.mode !== "PlantUML") return;
+
+  if (state.builderType === "plantuml-class") {
+    state.plantUmlMeta.orientation = state.renderOptions.orientation;
+    state.plantUmlMeta.lineType = state.renderOptions.lineType;
+    state.plantUmlMeta.classCircle = state.renderOptions.classCircle;
+    state.plantUmlMeta.attrIcons = state.renderOptions.attrIcons;
+    updateEditorFromGraph();
+  }
+  else {
+    const next = applyRenderOptionsToSource(els.codeEditor.value, state.renderOptions);
+    if (next !== els.codeEditor.value) {
+      els.codeEditor.value = next;
+      setDirty(true);
+      scheduleDraftSave();
+    }
+  }
+  updateRenderOptionsAvailability();
+  schedulePreview(0);
+  if (state.activeFile) state.thumbnailCache.delete(fileKey(state.activeFile));
+  renderFileList();
 }
 
 function getConnectionPoint(rect, target) {

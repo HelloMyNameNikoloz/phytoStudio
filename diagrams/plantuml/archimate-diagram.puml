@@ -1,0 +1,24 @@
+@startuml
+title Simple Shop System - ArchiMate View
+
+archimate #Business "Customer" as customer <<business-actor>>
+archimate #Business "Online Shopping" as shopping <<business-service>>
+archimate #Business "Checkout" as checkout <<business-process>>
+
+archimate #Application "Web Storefront" as webapp <<application-component>>
+archimate #Application "Catalog Service" as catalog <<application-service>>
+archimate #Application "Order Service" as orders <<application-service>>
+archimate #Application "Payment Service" as payment <<application-service>>
+
+archimate #Technology "Database" as db <<technology-service>>
+archimate #Technology "App Server" as server <<technology-node>>
+
+customer -- shopping
+shopping -- checkout
+shopping -- webapp
+webapp -- catalog
+webapp -- orders
+orders -- payment
+orders -- db
+server -- db
+@enduml

@@ -16,15 +16,15 @@
     return;
   }
 
-  state.builderType = "none";
-  if (state.mode === "PlantUML") {
-    els.emptyBuilder.textContent = "Visual builder supports PlantUML class diagrams. Other PlantUML diagrams still render in Live Preview.";
+  // Any diagram the node-editor can't represent (object, component, state,
+  // activity, gantt, mindmap, ER, json, archimate, ...) is shown as a fully
+  // rendered local SVG on the builder canvas, so every diagram type is visual.
+  state.builderType = "preview";
+  state.graph = { nodes: [], edges: [] };
+  if (els.builderPreview && !els.builderPreview.querySelector("svg")) {
+    setBuilderPreviewStatus("Rendering visual preview...");
   }
-  else {
-    els.emptyBuilder.textContent = "Visual builder is optimized for Mermaid flowcharts. Open or create a flowchart to edit nodes directly.";
-  }
-    state.graph = { nodes: [], edges: [] };
-    renderBuilder();
+  renderBuilder();
 }
 
 function fileMatchesSearch(file, query) {

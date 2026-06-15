@@ -1,0 +1,35 @@
+@startuml
+title Simple Shop System - Checkout Activity
+
+|Customer|
+start
+:Browse products;
+:Add items to cart;
+:Proceed to checkout;
+
+|System|
+:Validate cart;
+if (Items in stock?) then (yes)
+  :Calculate totals;
+  |Customer|
+  :Enter shipping & payment;
+  |Payment Provider|
+  :Authorize payment;
+  if (Payment approved?) then (yes)
+    |System|
+    :Create order;
+    :Reserve stock;
+    :Send confirmation email;
+    |Customer|
+    :Receive confirmation;
+    stop
+  else (no)
+    |System|
+    :Show payment error;
+    stop
+  endif
+else (no)
+  :Notify out of stock;
+  stop
+endif
+@enduml
