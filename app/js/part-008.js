@@ -68,6 +68,9 @@ function updateEditorFromGraph() {
   if (state.builderType === "plantuml-class") {
     els.codeEditor.value = graphToPlantUml(state.graph, state.plantUmlMeta);
   }
+  else if (state.builderType === "plantuml-visual") {
+    els.codeEditor.value = graphToPlantUmlVisual(state.graph, state.plantUmlMeta);
+  }
   else if (state.builderType === "mermaid-flowchart") {
     els.codeEditor.value = graphToMermaid(state.graph);
   }
@@ -157,7 +160,8 @@ function setRenderOption(key, value) {
   reflectRenderOptionControls();
   if (state.mode !== "PlantUML") return;
 
-  if (state.builderType === "plantuml-class") {
+  if (state.builderType === "plantuml-class" || state.builderType === "plantuml-visual") {
+    state.plantUmlMeta = state.plantUmlMeta || {};
     state.plantUmlMeta.orientation = state.renderOptions.orientation;
     state.plantUmlMeta.lineType = state.renderOptions.lineType;
     state.plantUmlMeta.classCircle = state.renderOptions.classCircle;

@@ -9,6 +9,66 @@
   }
 }
 
+// Default name/label for each palette figure.
+const FIGURE_DEFAULTS = {
+  actor: { base: "Actor", label: "Actor" },
+  usecase: { base: "UseCase", label: "Use Case" },
+  rectangle: { base: "Box", label: "Box" },
+  database: { base: "Database", label: "Database" },
+  component: { base: "Component", label: "Component" },
+  class: { base: "Class", label: "Class" }
+};
+
+// Make sure we're editing a PlantUML visual diagram before dropping a figure.
+// If the current document isn't one, start a fresh visual canvas.
+function ensureVisualDiagram() {
+  if (state.mode === "PlantUML" && isPlantUmlVisualSource(els.codeEditor.value)) return;
+  state.mode = "PlantUML";
+  els.modeMermaid.classList.remove("active");
+  els.modePlantUml.classList.add("active");
+  state.builderType = "plantuml-visual";
+  state.plantUmlMeta = { orientation: "lr", lineType: "default", classCircle: true, attrIcons: true };
+  state.graph = { nodes: [], edges: [] };
+  state.selectedNodeId = null;
+  state.selectedEdgeIndex = null;
+  // Start as an unsaved diagram so we never overwrite a different file that was
+  // open; the first save asks where to put it.
+  state.activeFile = null;
+  els.currentFile.textContent = "Unsaved visual diagram";
+  els.codeEditor.value = graphToPlantUmlVisual(state.graph, state.plantUmlMeta);
+  updateExportPanel();
+}
+
+// Add a figure to the visual canvas and sync it into the source.
+function addFigure(shape, position) {
+  if (!FIGURE_DEFAULTS[shape]) return;
+  ensureVisualDiagram();
+  const previous = snapshotState();
+  const spot = position || nextVisibleNodePosition();
+  const id = uniqueNodeId(FIGURE_DEFAULTS[shape].base);
+  state.graph.nodes.push({
+    id,
+    label: FIGURE_DEFAULTS[shape].label,
+    shape,
+    x: Math.max(12, spot.x),
+    y: Math.max(12, spot.y)
+  });
+  selectNode(id);
+  pushUndoSnapshot(previous);
+  updateEditorFromGraph();
+  renderBuilder();
+  fitPreviewToViewport?.();
+}
+
+// Translate a drop point (client coordinates) into canvas coordinates.
+function canvasPointFromClient(clientX, clientY) {
+  const viewport = els.canvasViewport.getBoundingClientRect();
+  return {
+    x: (clientX - viewport.left - state.canvasPan.x) / state.canvasZoom - 80,
+    y: (clientY - viewport.top - state.canvasPan.y) / state.canvasZoom - 36
+  };
+}
+
 async function createNewFile() {
   if (state.isDirty) {
     const shouldContinue = window.confirm("You have unsaved changes. Continue without saving?");

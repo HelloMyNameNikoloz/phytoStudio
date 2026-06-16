@@ -530,6 +530,25 @@ ipcMain.handle("workspace:choose-folder", async () => {
   return { root: workspaceRoot };
 });
 
+// Open a single diagram file directly, no workspace required. Returns a file
+// descriptor the renderer can load and save back to in place.
+ipcMain.handle("workspace:open-file", async () => {
+  const result = await dialog.showOpenDialog(getFocusedWindow(), {
+    title: "Open diagram file",
+    properties: ["openFile"],
+    filters: [
+      { name: "Diagram files", extensions: ["puml", "plantuml", "mmd", "mermaid"] },
+      { name: "PlantUML", extensions: ["puml", "plantuml"] },
+      { name: "Mermaid", extensions: ["mmd", "mermaid"] },
+      { name: "All files", extensions: ["*"] }
+    ]
+  });
+
+  if (result.canceled || !result.filePaths[0]) return null;
+
+  return { file: describeDiagramPath(result.filePaths[0]) };
+});
+
 ipcMain.handle("workspace:reveal-file", async (_event, relativePath) => {
   if (!relativePath) {
     await shell.openPath(workspaceRoot);
@@ -802,9 +821,22 @@ ipcMain.handle("export:current", async (_event, options) => {
     const requestedFormat = String(options?.format || "svg").toLowerCase();
     const format = ["svg", "png", "pdf"].includes(requestedFormat) ? requestedFormat : "svg";
     const defaultName = `${options?.baseName || "diagram"}.${format}`;
+
+    // Default the export next to the open file when there is one, otherwise fall
+    // back to the workspace output folder.
+    let defaultDir = path.join(workspaceRoot, "output");
+    if (options?.source) {
+      try {
+        defaultDir = path.dirname(resolveDiagramTarget(options.source));
+      }
+      catch {
+        // Ignore an unresolvable source and keep the output-folder default.
+      }
+    }
+
     const saveResult = await dialog.showSaveDialog(getFocusedWindow(), {
       title: `Export ${kind}`,
-      defaultPath: path.join(workspaceRoot, "output", defaultName),
+      defaultPath: path.join(defaultDir, defaultName),
       filters: [
         { name: `${format.toUpperCase()} file`, extensions: [format] },
         { name: "All files", extensions: ["*"] }
@@ -864,4 +896,61 @@ ipcMain.handle("dialog:new-file-name", async (_event, kind) => {
 
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   return kind === "PlantUML" ? `diagram-${stamp}.puml` : `diagram-${stamp}.mmd`;
+});
+
+// --- Integrated terminals -------------------------------------------------
+// Each terminal is a persistent PowerShell session. Commands are written to
+// stdin so session state (cwd, variables) survives between lines, and stdout/
+// stderr are streamed back to the renderer. No native PTY dependency: this is
+// a piped REPL, which is enough to run ordinary commands.
+const terminals = new Map();
+let terminalSeq = 0;
+
+function terminalSend(channel, payload) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send(channel, payload);
+  }
+}
+
+function disposeTerminal(id) {
+  const term = terminals.get(id);
+  if (!term) return;
+  terminals.delete(id);
+  try { term.child.stdin.end(); }
+  catch { /* already closed */ }
+  try { term.child.kill(); }
+  catch { /* already gone */ }
+}
+
+ipcMain.handle("terminal:create", () => {
+  const id = `term-${++terminalSeq}`;
+  const child = spawn("powershell.exe", ["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "-"], {
+    cwd: workspaceRoot,
+    env: process.env,
+    windowsHide: true
+  });
+
+  child.stdout.on("data", (data) => terminalSend("terminal:data", { id, chunk: data.toString() }));
+  child.stderr.on("data", (data) => terminalSend("terminal:data", { id, chunk: data.toString() }));
+  child.on("error", (error) => terminalSend("terminal:data", { id, chunk: `\n[terminal error] ${error.message}\n` }));
+  child.on("exit", (code) => {
+    terminals.delete(id);
+    terminalSend("terminal:exit", { id, code });
+  });
+
+  terminals.set(id, { child });
+  return { id, cwd: workspaceRoot };
+});
+
+ipcMain.on("terminal:input", (_event, id, data) => {
+  const term = terminals.get(id);
+  if (!term) return;
+  try { term.child.stdin.write(data); }
+  catch { /* process gone */ }
+});
+
+ipcMain.on("terminal:dispose", (_event, id) => disposeTerminal(id));
+
+app.on("before-quit", () => {
+  for (const id of [...terminals.keys()]) disposeTerminal(id);
 });

@@ -1,15 +1,7 @@
 
 .workspace.panel-overlay-open .side-panel {
-  position: fixed;
-  inset: 5vh 5vw;
-  z-index: 70;
   display: flex;
-  width: 90vw;
-  height: 90vh;
-  border: 1px solid var(--line-strong);
-  border-radius: 10px;
-  background: rgba(14, 15, 24, 0.98);
-  box-shadow: var(--shadow);
+  background: rgba(14, 15, 24, 0.96);
 }
 
 .workspace.console-panel-open .side-panel {
@@ -19,7 +11,7 @@
   left: 58px;
   z-index: 70;
   display: flex;
-  height: min(var(--console-panel-height, 300px), 78vh);
+  height: min(var(--console-panel-height, 300px), 90vh);
   min-height: 168px;
   border-top: 1px solid var(--line-strong);
   border-right: 0;
@@ -28,8 +20,49 @@
 }
 
 .workspace.panel-overlay-open .side-section.collapsed,
-.workspace.console-panel-open .side-section.collapsed {
+.workspace.console-panel-open .side-section.collapsed,
+.workspace.panel-modal-open .side-section.collapsed {
   display: none;
+}
+
+/* Files, Preview, Export and Console present as a centered full modal over the
+   canvas, with a dimmed, blurred backdrop. Figures keeps the side drawer. */
+.workspace.panel-modal-open .side-overlay-backdrop {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(10px);
+}
+
+.workspace.panel-modal-open .side-panel {
+  position: fixed;
+  top: 8vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 90;
+  display: flex;
+  width: min(900px, calc(100vw - 64px));
+  height: min(78vh, calc(100vh - 16vh));
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: rgba(14, 15, 24, 0.98);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.workspace.panel-modal-open .side-section {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* The preview is the one panel that needs room — open it nearly full-screen
+   so diagrams are easy to read. */
+.workspace.panel-modal-open[data-active-modal="preview"] .side-panel {
+  top: 5vh;
+  width: 90vw;
+  height: 90vh;
 }
 
 .side-panel-close {

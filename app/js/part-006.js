@@ -131,8 +131,11 @@ async function renderLivePreview() {
   if (!result.ok) {
     els.previewSurface.innerHTML = "";
     els.previewSurface.appendChild(els.previewEmpty);
-    setPreviewStatus(result.error || "Preview failed.", true);
-    if (state.builderType === "preview") setBuilderPreviewStatus(result.error || "Preview failed.", true);
+    const message = result.error || "Preview failed.";
+    setPreviewStatus(message, true);
+    if (state.builderType === "preview") setBuilderPreviewStatus(message, true);
+    appendConsole(`Render error: ${message}`);
+    bumpConsoleBadge();
     return;
   }
 
@@ -148,6 +151,8 @@ function schedulePreview(delay = 500) {
       els.previewSurface.innerHTML = "";
       els.previewSurface.appendChild(els.previewEmpty);
       setPreviewStatus(error.message, true);
+      appendConsole(`Render error: ${error.message}`);
+      bumpConsoleBadge();
     });
   }, delay);
 }

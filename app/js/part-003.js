@@ -118,7 +118,7 @@ function renderMinimap() {
   }
 }
 
-const SECTION_NAMES = ["files", "properties", "preview", "export", "console"];
+const SECTION_NAMES = ["files", "figures", "properties", "preview", "export", "console"];
 
 function sectionEl(name) {
   return document.getElementById(`section-${name}`);

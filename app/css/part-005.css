@@ -1,20 +1,24 @@
 
 .workspace.panel-overlay-open .side-section-body,
-.workspace.console-panel-open .side-section-body {
+.workspace.console-panel-open .side-section-body,
+.workspace.panel-modal-open .side-section-body {
   flex: 1 1 auto;
 }
 
-.workspace.panel-overlay-open #section-preview .preview-wrap {
+.workspace.panel-overlay-open #section-preview .preview-wrap,
+.workspace.panel-modal-open #section-preview .preview-wrap {
   flex: 1 1 auto;
   min-height: 0;
 }
 
-.workspace.panel-overlay-open #section-preview .preview-surface {
+.workspace.panel-overlay-open #section-preview .preview-surface,
+.workspace.panel-modal-open #section-preview .preview-surface {
   place-items: center;
   min-height: 100%;
 }
 
-.workspace.console-panel-open #consoleOutput {
+.workspace.console-panel-open #consoleOutput,
+.workspace.panel-modal-open #consoleOutput {
   flex: 1 1 auto;
 }
 
@@ -43,10 +47,26 @@
   letter-spacing: 0;
 }
 
+/* A quiet activity indicator: a small accent dot that only appears when there
+   is new console/terminal output while the console is closed. */
 .activity-badge {
   position: absolute;
-  top: 1px;
-  right: 1px;
+  top: 6px;
+  right: 6px;
+  min-width: 0;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  font-size: 0;
+  color: transparent;
+  background: var(--sky-aqua);
+  box-shadow: 0 0 0 2px rgba(9, 10, 16, 0.9), 0 0 8px rgba(76, 201, 240, 0.85);
+  animation: activity-dot-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes activity-dot-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
 }
 
 .side-search {

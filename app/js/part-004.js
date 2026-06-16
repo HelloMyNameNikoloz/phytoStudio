@@ -4,6 +4,7 @@ function isSidePanelOpen() {
   return Boolean(
     els.workspace?.classList.contains("panel-overlay-open")
       || els.workspace?.classList.contains("console-panel-open")
+      || els.workspace?.classList.contains("panel-modal-open")
   );
 }
 
@@ -16,7 +17,7 @@ function updateActivityState() {
 }
 
 function setConsolePanelHeight(height) {
-  const max = Math.round(window.innerHeight * 0.78);
+  const max = Math.round(window.innerHeight * 0.9);
   const next = Math.min(Math.max(Math.round(height), 168), Math.max(168, max));
   state.consolePanelHeight = next;
   els.workspace?.style.setProperty("--console-panel-height", `${next}px`);
@@ -33,19 +34,51 @@ function setEditorSplitRatio(ratio) {
   refreshAfterLayoutChange();
 }
 
+// Collapse the source pane so the canvas fills the stage — the visual editor
+// then works on its own, no code required.
+function setCodePanelHidden(hidden) {
+  state.codePanelHidden = hidden;
+  els.editorGrid?.classList.toggle("code-hidden", hidden);
+  if (els.toggleCodePanel) {
+    els.toggleCodePanel.textContent = hidden ? "Show code" : "Hide code";
+    els.toggleCodePanel.setAttribute("aria-pressed", String(!hidden));
+  }
+  if (hidden) {
+    if (els.editorGrid) els.editorGrid.style.gridTemplateColumns = "minmax(0, 1fr)";
+  }
+  else {
+    setEditorSplitRatio(state.editorSplitRatio);
+  }
+  localStorage.setItem("phyto:codeHidden", hidden ? "true" : "false");
+  refreshAfterLayoutChange();
+}
+
+// "figures" docks as a side drawer so shapes can be dragged onto the canvas.
+// "console" docks at the bottom like VS Code (a resizable terminal panel).
+// Files, Preview and Export open as a centered full modal.
 function openSidePanel(name) {
   openOnlySection(name);
-  els.workspace?.classList.remove("sidebar-collapsed", "panel-overlay-open", "console-panel-open");
-  els.workspace?.classList.add(name === "console" ? "console-panel-open" : "panel-overlay-open");
-  if (name === "console") setConsolePanelHeight(state.consolePanelHeight);
+  els.workspace?.classList.remove("sidebar-collapsed", "panel-overlay-open", "console-panel-open", "panel-modal-open");
+  if (name === "figures") {
+    els.workspace?.classList.add("panel-overlay-open");
+  }
+  else if (name === "console") {
+    els.workspace?.classList.add("console-panel-open");
+    setConsolePanelHeight(state.consolePanelHeight);
+  }
+  else {
+    els.workspace?.classList.add("panel-modal-open");
+  }
+  if (els.workspace) els.workspace.dataset.activeModal = name;
   if (name === "preview") requestAnimationFrame(fitPreviewToViewport);
+  if (name === "console") window.focusActiveTerminal?.();
   updateActivityState();
   persistSidebarState();
   refreshAfterLayoutChange();
 }
 
 function closeSidePanel({ persist = true } = {}) {
-  els.workspace?.classList.remove("panel-overlay-open", "console-panel-open");
+  els.workspace?.classList.remove("panel-overlay-open", "console-panel-open", "panel-modal-open");
   updateActivityState();
   if (persist) persistSidebarState();
   refreshAfterLayoutChange();
@@ -83,7 +116,7 @@ function restoreSidebarState() {
 }
 
 function bumpConsoleBadge() {
-  if (isSectionOpen("console") && els.workspace?.classList.contains("console-panel-open")) return;
+  if (isSectionOpen("console") && isSidePanelOpen()) return;
   state.consoleUnread = (state.consoleUnread || 0) + 1;
   const text = state.consoleUnread > 99 ? "99+" : String(state.consoleUnread);
   for (const badge of [els.consoleBadge, els.activityConsoleBadge]) {

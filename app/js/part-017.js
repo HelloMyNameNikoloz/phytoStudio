@@ -59,6 +59,10 @@ els.zoomInPreview.addEventListener("click", () => {
 });
 
 els.addNode.addEventListener("click", () => {
+  if (state.builderType === "plantuml-visual") {
+    addFigure("rectangle");
+    return;
+  }
   const previous = snapshotState();
   const position = nextVisibleNodePosition();
   if (state.builderType === "plantuml-class") {
@@ -104,6 +108,10 @@ els.deleteNode.addEventListener("click", () => {
 });
 
 els.clearConsole.addEventListener("click", () => {
+  if (window.clearActiveTerminal?.()) {
+    clearConsoleBadge();
+    return;
+  }
   setConsole("Ready.");
   clearConsoleBadge();
 });
@@ -149,6 +157,29 @@ els.canvasViewport.addEventListener("wheel", (event) => {
     y: event.clientY - rect.top
   });
 }, { passive: false });
+
+function hasFigurePayload(event) {
+  return Array.from(event.dataTransfer?.types || []).includes("text/phyto-figure");
+}
+
+els.canvasViewport.addEventListener("dragover", (event) => {
+  if (!hasFigurePayload(event)) return;
+  event.preventDefault();
+  if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+  els.canvasViewport.classList.add("drop-active");
+});
+
+els.canvasViewport.addEventListener("dragleave", (event) => {
+  if (event.target === els.canvasViewport) els.canvasViewport.classList.remove("drop-active");
+});
+
+els.canvasViewport.addEventListener("drop", (event) => {
+  els.canvasViewport.classList.remove("drop-active");
+  const shape = event.dataTransfer?.getData("text/phyto-figure");
+  if (!shape) return;
+  event.preventDefault();
+  addFigure(shape, canvasPointFromClient(event.clientX, event.clientY));
+});
 
 els.canvasViewport.addEventListener("pointerdown", (event) => {
   if (event.button !== 0 || event.target.closest(".diagram-node") || event.target.closest(".inline-edit") || event.target.closest(".edge-hit")) return;

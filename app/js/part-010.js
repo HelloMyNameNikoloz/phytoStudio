@@ -1,4 +1,4 @@
-    if (state.builderType !== "mermaid-flowchart") {
+    if (state.builderType !== "mermaid-flowchart" && state.builderType !== "plantuml-visual") {
       nodeEl.querySelector(".node-label").textContent = node.label;
     }
   }
@@ -6,7 +6,7 @@
   nodeEl.style.top = `${node.y}px`;
   nodeEl.classList.toggle("selected", state.selectedNodeId === node.id);
   nodeEl.classList.toggle("pending", state.pendingConnectionId === node.id);
-  if (state.builderType === "plantuml-class" || state.builderType === "mermaid-flowchart") {
+  if (state.builderType === "plantuml-class" || state.builderType === "mermaid-flowchart" || state.builderType === "plantuml-visual") {
     wireInlineEditors(nodeEl, node);
   }
 
@@ -86,6 +86,11 @@
       nodeEl.removeEventListener("pointermove", onPointerMove);
       nodeEl.removeEventListener("pointerup", onPointerUp);
       renderMinimap();
+      // Persist the new position into the source (visual diagrams store node
+      // coordinates as "' phyto-pos" comments) so layout survives reloads.
+      if (state.builderType === "plantuml-visual" && (node.x !== initialX || node.y !== initialY)) {
+        updateEditorFromGraph();
+      }
     };
 
     nodeEl.addEventListener("pointermove", onPointerMove);
@@ -105,11 +110,16 @@ function renderBuilder() {
   }
   const isPreview = state.builderType === "preview";
   const enabled = state.builderType !== "none" && !isPreview && state.graph.nodes.length > 0;
-  const canEditStructure = state.builderType === "plantuml-class" || state.builderType === "mermaid-flowchart";
+  const canEditStructure = state.builderType === "plantuml-class" || state.builderType === "mermaid-flowchart" || state.builderType === "plantuml-visual";
 
   if (state.builderType === "plantuml-class") {
     setCommandButton(els.addNode, "+", "Add Class");
     setCommandButton(els.connectNodes, "⟶", "Associate");
+    if (els.deleteNode) els.deleteNode.textContent = "Delete";
+  }
+  else if (state.builderType === "plantuml-visual") {
+    setCommandButton(els.addNode, "+", "Add Box");
+    setCommandButton(els.connectNodes, "⟶", "Connect");
     if (els.deleteNode) els.deleteNode.textContent = "Delete";
   }
   else {
@@ -165,6 +175,26 @@ function updateBuilderFromEditor() {
     }
     state.graph = nextGraph;
     els.emptyBuilder.textContent = "Open or create a Mermaid flowchart to edit nodes directly.";
+    renderBuilder();
+    return;
+  }
+
+  if (state.mode === "PlantUML" && isPlantUmlVisualSource(els.codeEditor.value)) {
+    state.builderType = "plantuml-visual";
+    const previousPositions = new Map(state.graph.nodes.map((node) => [node.id, { x: node.x, y: node.y }]));
+    const parsed = parsePlantUmlVisual(els.codeEditor.value);
+    state.plantUmlMeta = parsed.meta;
+    for (const node of parsed.graph.nodes) {
+      // Prefer the live in-session position so dragging never jumps; fall back to
+      // the position parsed from "' phyto-pos" comments on first load.
+      const previous = previousPositions.get(node.id);
+      if (previous) {
+        node.x = previous.x;
+        node.y = previous.y;
+      }
+    }
+    state.graph = parsed.graph;
+    els.emptyBuilder.textContent = "Drag a figure from the Figures panel onto the canvas to start.";
     renderBuilder();
     return;
   }

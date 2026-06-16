@@ -31,7 +31,87 @@
   grid-template-rows: auto minmax(0, 1fr);
 }
 
-#consoleOutput {
+/* Terminal dock (VS Code-style bottom panel) */
+.terminal-body {
+  gap: 6px;
+}
+
+.terminal-dock {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.terminal-tabs {
+  display: flex;
+  gap: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.terminal-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 7px 7px 0 0;
+  background: rgba(5, 6, 12, 0.45);
+  color: var(--subtle);
+  font-size: 11px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.terminal-tab.active {
+  color: var(--text);
+  border-color: var(--line-strong);
+  background: rgba(5, 6, 12, 0.85);
+}
+
+.terminal-tab-close {
+  font-size: 14px;
+  line-height: 1;
+  opacity: 0.55;
+}
+
+.terminal-tab-close:hover {
+  opacity: 1;
+  color: var(--neon-pink);
+}
+
+.terminal-add {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 25px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--subtle);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.terminal-add:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+.terminal-views {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.terminal-view {
+  display: none;
+  flex: 1 1 auto;
+  min-width: 0;
   min-height: 0;
   margin: 0;
   padding: 10px;
@@ -44,6 +124,39 @@
   font-size: 11px;
   line-height: 1.45;
   white-space: pre-wrap;
+}
+
+.terminal-view.active {
+  display: block;
+}
+
+.terminal-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(5, 6, 12, 0.72);
+}
+
+.terminal-prompt {
+  color: var(--sky-aqua);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#terminalInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 12px;
+  outline: 0;
 }
 
 .toast-stack {
@@ -113,7 +226,83 @@
     grid-template-columns: 58px 0 minmax(0, 1fr);
   }
 
-  .editor-grid {
+  .editor-grid:not(.code-hidden) {
     grid-template-columns: minmax(300px, 75fr) 8px minmax(240px, 25fr);
   }
+}
+
+/* ---- Figures palette ---- */
+.figures-hint {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.figure-palette {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.figure-tile {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 14px 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  cursor: grab;
+  transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+
+.figure-tile:hover {
+  transform: translateY(-2px);
+  border-color: rgba(76, 201, 240, 0.5);
+  background: rgba(76, 201, 240, 0.12);
+}
+
+.figure-tile:active {
+  cursor: grabbing;
+}
+
+.figure-tile.dragging {
+  opacity: 0.5;
+}
+
+.figure-tile-art {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 38px;
+  color: var(--sky-aqua);
+}
+
+.figure-tile-art svg {
+  max-width: 48px;
+  max-height: 34px;
+}
+
+.figure-tile-label {
+  font-size: 12px;
+  font-weight: 650;
+}
+
+/* Highlight the canvas while a figure is dragged over it. */
+.canvas-viewport.drop-active {
+  outline: 2px dashed rgba(76, 201, 240, 0.6);
+  outline-offset: -6px;
+  background: rgba(76, 201, 240, 0.05);
+}
+
+/* Hide the source pane so the visual canvas fills the stage. */
+.editor-grid.code-hidden {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.editor-grid.code-hidden .editor-resize-handle,
+.editor-grid.code-hidden .code-panel {
+  display: none;
 }

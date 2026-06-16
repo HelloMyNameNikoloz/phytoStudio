@@ -52,25 +52,20 @@ function setSelectedEdgeRelation(relation) {
   autoOrganizeAfterMutation();
 }
 
-async function openWorkspaceFolder() {
-  if (state.isDirty && !window.confirm("You have unsaved changes. Continue without saving?")) return;
-  const result = await api.workspace.chooseFolder();
-  if (!result) return;
-  state.currentWorkspaceRoot = result.root;
-  state.activeFile = null;
-  els.currentFile.textContent = result.root;
-  updateExportPanel();
-  setDirty(false);
-  await loadFiles();
-  setSideView("files");
-  appendConsole(`Opened workspace: ${result.root}`);
+// Open a single .puml/.mmd file directly. Edits and saves go back to that file
+// in place — no workspace folder required.
+async function openFileFromDialog() {
+  const result = await api.workspace.openFile();
+  if (!result?.file) return;
+  await openFile(result.file);
+  appendConsole(`Opened file: ${fileDisplayPath(result.file)}`);
 }
 
 const commandRegistry = [
   { id: "new", label: "New Diagram", keys: "Ctrl+N", run: createNewFile },
   { id: "save", label: "Save", keys: "Ctrl+S", run: saveActiveFile },
   { id: "saveAs", label: "Save As", keys: "Ctrl+Shift+S", run: saveAsFile },
-  { id: "openWorkspace", label: "Open Workspace", keys: "Ctrl+O", run: openWorkspaceFolder },
+  { id: "openFile", label: "Open File", keys: "Ctrl+O", run: openFileFromDialog },
   { id: "export", label: "Export Current As", keys: "Ctrl+E", run: exportCurrentAs },
   { id: "validate", label: "Validate Diagram", keys: "Ctrl+Shift+V", run: validateDiagram },
   { id: "fit", label: "Fit Canvas", keys: "Ctrl+0", run: fitCanvasToDiagram },
@@ -172,7 +167,7 @@ document.addEventListener("keydown", (event) => {
   }
   if (key === "o") {
     event.preventDefault();
-    openWorkspaceFolder();
+    openFileFromDialog();
     return;
   }
   if (key === "e") {

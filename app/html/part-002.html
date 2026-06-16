@@ -89,8 +89,20 @@
                 <button class="ghost-button" id="clearConsole" type="button">Clear</button>
               </div>
             </div>
-            <div class="side-section-body">
-              <pre id="consoleOutput">Ready.</pre>
+            <div class="side-section-body terminal-body">
+              <div class="terminal-dock">
+                <div class="terminal-tabs" id="terminalTabs">
+                  <button class="terminal-tab active" type="button" data-term="output"><span>Output</span></button>
+                </div>
+                <button class="terminal-add" id="terminalAdd" type="button" title="New terminal">+</button>
+              </div>
+              <div class="terminal-views" id="terminalViews">
+                <pre id="consoleOutput" class="terminal-view active" data-term-view="output">Ready.</pre>
+              </div>
+              <div class="terminal-input-row" id="terminalInputRow" hidden>
+                <span class="terminal-prompt">PS&gt;</span>
+                <input id="terminalInput" type="text" autocomplete="off" spellcheck="false" placeholder="Type a command and press Enter" />
+              </div>
             </div>
           </section>
         </aside>
@@ -106,24 +118,24 @@
             <button class="command-button" id="fitCanvas"><span class="button-icon">□</span><span>Fit</span></button>
             <span class="toolbar-separator" aria-hidden="true"></span>
             <div class="render-options" id="renderOptions" hidden>
-              <label class="toolbar-field">
-                <span>Layout</span>
-                <select id="optOrientation">
+              <label class="toolbar-field" title="Layout direction">
+                <span class="toolbar-field-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="6" height="6" rx="1.4"/><rect x="16" y="9" width="6" height="6" rx="1.4"/><path d="M8 12h5"/><path d="m13 9 3 3-3 3"/></svg></span>
+                <select id="optOrientation" aria-label="Layout direction">
                   <option value="tb">Top → Bottom</option>
                   <option value="lr">Left → Right</option>
                 </select>
               </label>
-              <label class="toolbar-field">
-                <span>Lines</span>
-                <select id="optLineType">
+              <label class="toolbar-field" title="Connector style">
+                <span class="toolbar-field-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h7v14h11"/><circle cx="3" cy="5" r="1.6" fill="currentColor" stroke="none"/><circle cx="21" cy="19" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+                <select id="optLineType" aria-label="Connector style">
                   <option value="default">Default</option>
                   <option value="polyline">Polyline</option>
                   <option value="ortho">Orthogonal</option>
                   <option value="splines">Curved</option>
                 </select>
               </label>
-              <button class="command-button toggle active" id="optClassCircle" type="button" aria-pressed="true" title="Show the (C) class icon">(C)</button>
-              <button class="command-button toggle active" id="optAttrIcons" type="button" aria-pressed="true" title="Show member visibility icons">Members</button>
+              <button class="command-button toggle active icon-only" id="optClassCircle" type="button" aria-pressed="true" aria-label="Show the (C) class icon" title="Show the (C) class icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.2 9.4a4 4 0 1 0 0 5.2" stroke-linecap="round"/></svg></button>
+              <button class="command-button toggle active icon-only" id="optAttrIcons" type="button" aria-pressed="true" aria-label="Show member visibility icons" title="Show member visibility icons"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="7" r="1.5" fill="currentColor" stroke="none"/><path d="M9 7h11"/><circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M9 12h11"/><circle cx="5" cy="17" r="1.5" fill="currentColor" stroke="none"/><path d="M9 17h7"/></svg></button>
             </div>
             <span class="toolbar-separator" aria-hidden="true"></span>
             <button class="command-button" id="addNode"><span class="button-icon">+</span><span>Add Class</span></button>
@@ -141,6 +153,7 @@
                   <h2>Visual Builder</h2>
                   <p id="builderHint">Flowchart canvas syncs with Mermaid code.</p>
                 </div>
+                <button class="ghost-button" id="toggleCodePanel" type="button" title="Show or hide the code panel" aria-pressed="true">Hide code</button>
               </div>
               <div class="canvas-wrap">
                 <div class="organize-overlay hidden" id="organizeOverlay" aria-live="polite">

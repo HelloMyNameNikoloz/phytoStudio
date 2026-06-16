@@ -157,6 +157,9 @@ function wireInlineEditors(nodeEl, node) {
   });
 }
 
+// Stick-figure glyph drawn above an actor's label on the builder canvas.
+const ACTOR_GLYPH = `<svg class="actor-glyph" viewBox="0 0 24 42" aria-hidden="true"><circle cx="12" cy="6" r="5"/><line x1="12" y1="11" x2="12" y2="27"/><line x1="3" y1="17" x2="21" y2="17"/><line x1="12" y1="27" x2="4" y2="40"/><line x1="12" y1="27" x2="20" y2="40"/></svg>`;
+
 function makeNodeElement(node) {
   const nodeEl = document.createElement("div");
   nodeEl.tabIndex = 0;
@@ -175,6 +178,30 @@ function makeNodeElement(node) {
     setEditableText(nodeEl, '[data-field="methods"]', (node.methods || []).join("\n"));
   }
   else {
-    const editable = state.builderType === "mermaid-flowchart" ? ` class="node-label inline-edit" data-field="label" contenteditable="true" spellcheck="false"` : ` class="node-label"`;
-    nodeEl.innerHTML = `<span${editable}></span>`;
+    // The visual editor and Mermaid flowchart both edit labels in place.
+    const labelEditable = state.builderType === "mermaid-flowchart" || state.builderType === "plantuml-visual";
+    const editable = labelEditable ? ` class="node-label inline-edit" data-field="label" contenteditable="true" spellcheck="false"` : ` class="node-label"`;
+    // Shaped diagrams (visual editor + read-only source maps) carry a shape so
+    // actors render as stick figures, databases as cylinders, use cases as ovals,
+    // etc. — matching the PlantUML output instead of every element being a box.
+    const shaped = state.builderType === "source-map" || state.builderType === "plantuml-visual";
+    const shape = shaped ? (node.shape || "rectangle") : "rectangle";
+    let decoration = "";
+    if (shape === "actor") {
+      nodeEl.classList.add("actor-node");
+      decoration = ACTOR_GLYPH;
+    }
+    else if (shape === "database") {
+      nodeEl.classList.add("database-node");
+    }
+    else if (shape === "usecase") {
+      nodeEl.classList.add("usecase-node");
+    }
+    else if (shape === "component") {
+      nodeEl.classList.add("component-node");
+    }
+    else if (shape === "class") {
+      nodeEl.classList.add("class-figure-node");
+    }
+    nodeEl.innerHTML = `${decoration}<span${editable}></span>`;
     setEditableText(nodeEl, '[data-field="label"]', node.label);

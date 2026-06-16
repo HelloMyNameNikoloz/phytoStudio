@@ -62,6 +62,28 @@
   background: var(--surface-soft);
 }
 
+/* Brighten the glyph on hover so all three controls respond the same way. */
+#minimizeWindow:hover span,
+.icon-button:hover span::before,
+.icon-button:hover span::after {
+  background: var(--text);
+}
+
+#maximizeWindow:hover span {
+  border-color: var(--text);
+}
+
+/* Standard destructive-red treatment for the close button. */
+#closeWindow:hover {
+  border-color: transparent;
+  background: var(--danger);
+}
+
+#closeWindow:hover span::before,
+#closeWindow:hover span::after {
+  background: #fff;
+}
+
 .icon-button span {
   display: block;
   width: 11px;
@@ -105,16 +127,24 @@
 }
 
 .workspace {
+  --side-panel-width: clamp(280px, 20vw, 440px);
   display: grid;
   grid-template-columns: 58px 0 minmax(0, 1fr);
   width: 100%;
   height: 100%;
   min-height: 0;
   overflow: hidden;
+  transition: grid-template-columns 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .workspace.sidebar-collapsed {
   grid-template-columns: 58px 0 minmax(0, 1fr);
+}
+
+/* Left-side sections dock as a sliding 20% column instead of a full-screen
+   modal, so the canvas stays visible and figures can be dragged onto it. */
+.workspace.panel-overlay-open {
+  grid-template-columns: 58px var(--side-panel-width) minmax(0, 1fr);
 }
 
 .workspace.sidebar-collapsed .side-panel,
@@ -159,22 +189,20 @@
 .side-panel {
   grid-column: 2;
   grid-row: 1;
-  display: none;
+  display: flex;
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  border-right: 1px solid var(--line);
+  border-right: 0;
   background: rgba(12, 13, 21, 0.55);
   overflow: hidden;
 }
 
+.workspace.panel-overlay-open .side-panel {
+  border-right: 1px solid var(--line);
+}
+
+/* Docked panel needs no modal backdrop — the canvas stays fully interactive. */
 .workspace.panel-overlay-open .side-overlay-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 65;
-  display: block;
-  border: 0;
-  background: rgba(0, 0, 0, 0.42);
-  backdrop-filter: blur(5px);
-  cursor: default;
+  display: none;
 }

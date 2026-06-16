@@ -189,6 +189,28 @@
   white-space: nowrap;
 }
 
+.toolbar-field-icon {
+  display: inline-grid;
+  place-items: center;
+}
+
+.toolbar-field-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Toggle buttons that show only an icon keep a square, balanced footprint. */
+.command-button.toggle.icon-only {
+  padding: 0;
+  width: 32px;
+  justify-content: center;
+}
+
+.command-button.toggle.icon-only svg {
+  width: 16px;
+  height: 16px;
+}
+
 .toolbar-field select {
   min-height: 30px;
   border: 1px solid var(--line);

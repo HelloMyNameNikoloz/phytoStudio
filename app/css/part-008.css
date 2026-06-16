@@ -130,6 +130,84 @@
   border-radius: 5px;
 }
 
+/* Actor: a borderless stick figure with the caption underneath. */
+.diagram-node.actor-node {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  min-width: 110px;
+  min-height: 96px;
+  padding: 6px 10px;
+  gap: 6px;
+}
+
+.diagram-node.actor-node:hover {
+  border: 0;
+  box-shadow: none;
+}
+
+.diagram-node.actor-node.selected {
+  background: transparent;
+  box-shadow: none;
+}
+
+.actor-glyph {
+  width: 34px;
+  height: 58px;
+  fill: none;
+  stroke: var(--node-border-hover);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.diagram-node.actor-node.selected .actor-glyph,
+.diagram-node.actor-node:hover .actor-glyph {
+  stroke: var(--node-border-selected);
+}
+
+/* Use case: a solid oval, the way PlantUML draws ( ... ). */
+.diagram-node.usecase-node {
+  border-radius: 50% / 46%;
+  min-width: 150px;
+  min-height: 78px;
+  padding: 14px 22px;
+}
+
+/* Database: a cylinder approximated with a curved cap. */
+.diagram-node.database-node {
+  border-radius: 60px 60px 14px 14px / 22px 22px 14px 14px;
+  min-width: 130px;
+  min-height: 70px;
+  padding-top: 18px;
+  background-image: radial-gradient(120% 22px at 50% 0, var(--node-border) 0 1px, transparent 1px);
+}
+
+/* Component: a box with the little UML side tabs. */
+.diagram-node.component-node {
+  border-radius: 6px;
+}
+
+.diagram-node.component-node::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 11px;
+  width: 11px;
+  height: 20px;
+  border: 1px solid var(--node-border);
+  border-radius: 2px;
+  background: var(--node-bg);
+}
+
+/* Class: a box with a title divider, the way a UML class header reads. */
+.diagram-node.class-figure-node {
+  padding-top: 20px;
+  background-image: linear-gradient(var(--node-border), var(--node-border));
+  background-size: 100% 1px;
+  background-position: 0 16px;
+  background-repeat: no-repeat;
+}
+
 .diagram-node.class-node {
   display: block;
   min-width: 180px;
